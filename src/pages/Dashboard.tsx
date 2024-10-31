@@ -1,36 +1,30 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import Table from '../components/Table';
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import Navbar from '../components/Navbar';
+import DevicesTable from '../components/DeviceTable';
+import TicketsTable from '../components/Table';
 
 const Dashboard: React.FC = () => {
+  const [currentView, setCurrentView] = useState<'devices' | 'tickets'>('devices');
+
+  const handleNavigation = (view: 'devices' | 'tickets') => {
+    setCurrentView(view);
+  };
+
   return (
-    <div className="dashboard">
-      <Router>
-        <Sidebar />
-        <switch>
-          <Route path='/system' Component={System} ></Route>
-          <Route path='/system/devices' Component={Devices}></Route>
-          <Route path='/system/tickets' Component={Tickets}></Route>
-        </switch>
-      </Router>
-      <div className="main-content">
+    <div className="flex h-screen">
+      <Sidebar
+        onNavigate={handleNavigation}
+        currentView={currentView}
+      />
+      <div className="main-content flex flex-col h-full">
         <Navbar />
-        <Table />
+        <div className="p-6">
+          {currentView === 'devices' ? <DevicesTable /> : <TicketsTable />}
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
-
-const System: React.FC = () => {
-  return <div className='system'>System</div>
-}
-const Devices: React.FC = () => {
-  return <div className='system'>Devices</div>
-}
-const Tickets: React.FC = () => {
-  return <div className='system'>Tickets</div>
-}

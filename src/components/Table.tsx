@@ -1,56 +1,45 @@
 import React from 'react';
-import IconButton from './IconButton.tsx';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { tickets } from '../data/mockData';
 
-const Table: React.FC = () => {
-  const data = [
-    //TODO: Add arbitrate data in here to test
-    {
-      ticket_id: "00001",
-      borrower_id: "20207632",
-      borrower_name: "Nguyen Viet Thanh",
-      borrower_tag: "Student",
-      borrow_time: "15:03",
-      expected_return_on: "16:30",
-      return_time: "16:05",
-      status: "Returned",
-    }
-  ];
-
+const TicketsTable: React.FC = () => {
   return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th>TicketID</th>
-          <th>BorrowerID</th>
-          <th>Borrower Name</th>
-          <th>Borrower Tag</th>
-          <th>Borrow Time</th>
-          <th>Expected Return On</th>
-          <th>Return Time</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item, index) => (
-          <tr key={index}>
-            <td>{item.ticket_id}</td>
-            <td>{item.borrower_id}</td>
-            <td>{item.borrower_name}</td>
-            <td>{item.borrower_tag}</td>
-            <td>{item.borrow_time}</td>
-            <td>{item.expected_return_on}</td>
-            <td>{item.return_time}</td>
-            <td>{item.status}</td>
-            <td>
-              <IconButton icon="edit" />
-              <IconButton icon="delete" />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Ticket Management</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <table className="w-full">
+          <thead>
+            <tr className="border-b">
+              <th className="p-2 text-left">ID</th>
+              <th className="p-2 text-left">Borrower ID</th>
+              <th className="p-2 text-left">Name</th>
+              <th className="p-2 text-left">Device</th>
+              <th className="p-2 text-left">Borrow Time</th>
+              <th className="p-2 text-left">Expected Return</th>
+              <th className="p-2 text-left">Return Time</th>
+              <th className="p-2 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets.map(ticket => (
+              <tr key={ticket.id} className="hover:bg-gray-100">
+                <td className="p-2">{ticket.id}</td>
+                <td className="p-2">{ticket.borrower_id}</td>
+                <td className="p-2">{ticket.name}</td>
+                <td className="p-2">{ticket.device}</td>
+                <td className="p-2">{ticket.borrow_time}</td>
+                <td className="p-2">{ticket.expected_return_in}</td>
+                <td className="p-2">{ticket.return_time}</td>
+                <td className="p-2">{ticket.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </CardContent>
+    </Card>
+  );
+};
 
-export default Table;
+export default TicketsTable;

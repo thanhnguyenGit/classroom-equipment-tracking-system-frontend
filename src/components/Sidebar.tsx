@@ -1,144 +1,41 @@
-import React, { useState } from 'react';
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
-import { IconContext } from 'react-icons';
-import { Link } from 'react-router-dom';
-import { styled } from 'styled-components';
-import { SidebarItem } from './SidebarItem';
+import React from 'react';
+import { ServerCog, Ticket } from 'lucide-react';
 
-const Nav = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 5rem;
-    background-color: black;
-`;
+type SidebarProps = {
+  onNavigate: (view: 'devices' | 'tickets') => void;
+  currentView: 'devices' | 'tickets';
+};
 
-const SidebarNav = styled.div<{ sidebar: boolean }>`
-    width: 250px;
-    height: 100vh;
-    background-color: black;
-    position: fixed;
-    top: 0;
-    left: ${({ sidebar }) => (sidebar ? '0' : '-100%')};
-    transition: 350ms;
-`;
-
-const NavIcon = styled(Link)`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 5rem;
-    font-size: 2rem;
-    margin-left: 2rem;
-`;
-
-const SidebarWrap = styled.div``;
-
-const SideBar: React.FC = () => {
-
-  const [sidebar, setSidebar] = useState(false);
-  const showSidebar = () => setSidebar(!sidebar);
-
+const Sidebar: React.FC<SidebarProps> = ({ onNavigate, currentView }) => {
   return (
-    <IconContext.Provider value={{ color: '#fff' }}>
-      <Nav>
-        <NavIcon to="#" onClick={showSidebar}>
-          <AiOutlineMenu />
-        </NavIcon>
-      </Nav>
-      <SidebarNav sidebar={sidebar}>
-        <SidebarWrap>
-          <NavIcon to="#" onClick={showSidebar}>
-            <AiOutlineClose />
-          </NavIcon>
-          {SidebarData.map((item, index) => {
-            return <Submenu item={item} key={index} />;
-          })}
-        </SidebarWrap>
-      </SidebarNav>
-    </IconContext.Provider>
+    <aside className="w-2 bg-black-800 text-white h-full left-0 top-0 fixed p-4">
+      <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
+      <nav>
+        <ul>
+          <li className="mb-2">
+            <button
+              onClick={() => onNavigate('devices')}
+              className={`flex items-center p-2 w-full text-left ${currentView === 'devices' ? 'bg-gray-700' : 'hover:bg-gray-700'
+                } rounded`}
+            >
+              <ServerCog className="mr-2" />
+              Devices
+            </button>
+          </li>
+          <li className="mb-2">
+            <button
+              onClick={() => onNavigate('tickets')}
+              className={`flex items-center p-2 w-full text-left ${currentView === 'tickets' ? 'bg-gray-700' : 'hover:bg-gray-700'
+                } rounded`}
+            >
+              <Ticket className="mr-2" />
+              Tickets
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </aside>
   );
-}
-export default SideBar;
+};
 
-const SidebarData: SidebarItem[] = [
-  {
-    title: 'System',
-    path: '/system',
-    subnav: [
-      {
-        title: 'Devices',
-        path: '/system/devices'
-      },
-      {
-        title: 'Tickets',
-        path: '/system/tickets'
-      }
-    ]
-  }
-]
-
-type SidebarLinkProps = {
-  item: SidebarItem;
-}
-
-const SidebarLink = styled(Link)`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 3.75rem;
-    font-size: 1.125rem;
-    padding: 2rem;
-    text-decoration: none;
-    color: #ffffff;
-
-    &:hover {
-        background-color: #1f1f1b;
-        border-left: 4px solid #6d44dc;
-    }
-`;
-
-const SidebarLabel = styled.span`
-    margin-left: 1rem;
-`;
-
-const DropdownLink = styled(Link)`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 3.75rem;
-    font-size: 1.125rem;
-    padding-left: 3rem;
-    text-decoration: none;
-    color: #ffffff;
-
-    &:hover {
-        background-color: #6d44dc;
-    }
-`;
-
-const Submenu: React.FC<SidebarLinkProps> = ({ item }) => {
-  const [subnav, setSubnav] = useState(false);
-  const showSubnav = () => setSubnav(!subnav);
-
-  return (
-    <>
-      <SidebarLink to={item.path} onClick={showSubnav}>
-        <div>
-          {item.icon}
-          <SidebarLabel>{item.title}</SidebarLabel>
-        </div>
-        <div>{item?.subnav && subnav ? item?.iconOpened : item?.iconClosed}</div>
-      </SidebarLink>
-      {subnav &&
-        item?.subnav?.map((subnavItem, index) => {
-          return (
-            <DropdownLink to={subnavItem.path} key={index}>
-              {subnavItem.icon}
-              <SidebarLabel>{subnavItem.title}</SidebarLabel>
-            </DropdownLink>
-          );
-        })}
-    </>
-  );
-}
+export default Sidebar;
