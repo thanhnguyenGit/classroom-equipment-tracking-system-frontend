@@ -5,8 +5,8 @@ const Navbar: React.FC = () => {
     <div className="navbar">
       <h2>Mượn trả</h2>
       <div className="navbar-controls">
-        <button className="btn">Đăng ký mượn</button>
-        <input type="text" placeholder="Tìm kiếm..." />
+        <button className="btn">Create Ticket</button>
+        <input type="text" placeholder="Search..." />
       </div>
     </div>
   );
