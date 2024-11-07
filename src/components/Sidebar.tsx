@@ -1,40 +1,36 @@
-import React from 'react';
-import { ServerCog, Ticket } from 'lucide-react';
+import "../styles/Sidebar.scss"
+import DashboardIcon from '@mui/icons-material/Dashboard'
 
-type SidebarProps = {
-  onNavigate: (view: 'devices' | 'tickets') => void;
-  currentView: 'devices' | 'tickets';
-};
-
-const Sidebar: React.FC<SidebarProps> = ({ onNavigate, currentView }) => {
+const Sidebar = () => {
   return (
-    <aside className="w-2 bg-black-800 text-white h-full left-0 top-0 fixed p-4">
-      <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-      <nav>
+    <div className='sidebar'>
+      <div className='top'>
+        <span className='logo'>HUSTticket</span>
+      </div>
+      <hr />
+      <div className='center'>
         <ul>
-          <li className="mb-2">
-            <button
-              onClick={() => onNavigate('devices')}
-              className={`flex items-center p-2 w-full text-left ${currentView === 'devices' ? 'bg-gray-700' : 'hover:bg-gray-700'
-                } rounded`}
-            >
-              <ServerCog className="mr-2" />
-              Devices
-            </button>
+          <p className="title">MAIN</p>
+          <li>
+            <DashboardIcon className="icon" />
+            <span >Ticket</span>
           </li>
-          <li className="mb-2">
-            <button
-              onClick={() => onNavigate('tickets')}
-              className={`flex items-center p-2 w-full text-left ${currentView === 'tickets' ? 'bg-gray-700' : 'hover:bg-gray-700'
-                } rounded`}
-            >
-              <Ticket className="mr-2" />
-              Tickets
-            </button>
+          <li>
+            <DashboardIcon className="icon" />
+            <span >Device</span>
+          </li>
+          <p className="title">Personal</p>
+          <li>
+            <DashboardIcon className="icon" />
+            <span >User</span>
           </li>
         </ul>
-      </nav>
-    </aside>
+      </div>
+      <div className='bottom'>
+        <div className="colorOption"></div>
+        <div className="colorOption"></div>
+      </div>
+    </div>
   );
 };
 

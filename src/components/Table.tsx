@@ -1,10 +1,9 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { tickets } from '../data/mockData';
-
+import "../styles/Table.scss"
 const TicketsTable: React.FC = () => {
   return (
-    <Card className="w-full">
+    <Card className="table">
       <CardHeader>
         <CardTitle>Ticket Management</CardTitle>
       </CardHeader>

@@ -1,18 +1,24 @@
-import React from 'react';
-import { LayoutDashboard } from 'lucide-react';
-import { Button } from './ui/button';
+import "../styles/Navbar.scss";
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
+import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   return (
-    <nav className="bg-white shadow-md p-4 flex justify-between items-center">
-      <div className="flex items-center">
-        <LayoutDashboard className="mr-2" />
-        <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+    <div className="navbar">
+      <div className="wrapper">
+        <div className="search">
+          <input type="text" placeholder="Seach.." />
+          <SearchOutlined />
+        </div>
+        <div className="items">
+          <div className="item">
+            <LanguageOutlined />
+            English
+
+          </div>
+        </div>
       </div>
-      <div>
-        <Button variant="outline">Search</Button>
-      </div>
-    </nav>
+    </div>
   );
 };
 
