@@ -1,6 +1,6 @@
 import "../styles/Sidebar.scss"
 import DashboardIcon from '@mui/icons-material/Dashboard'
-
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     <div className='sidebar'>

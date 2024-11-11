@@ -1,6 +1,5 @@
 import "../styles/Widget.scss";
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
-import PersonOutlined from '@mui/icons-material/PersonOutlined';
 import ListSharp from '@mui/icons-material/ListSharp';
 import DeviceHub from '@mui/icons-material/DeviceHub'
 
@@ -18,7 +17,15 @@ const Widget = ({ type }: { type: string }) => {
         amount: false,
         link: "See all tickets",
         icon: (
-          <ListSharp className="icon" />
+          <ListSharp
+            className="icon"
+            style={
+              {
+                color: "black",
+                backgroundColor: "lightgray"
+              }
+            }
+          />
         )
       };
       break;
@@ -28,7 +35,14 @@ const Widget = ({ type }: { type: string }) => {
         isMoney: false,
         link: "See all devices",
         icon: (
-          <DeviceHub className="icon" />
+          <DeviceHub className="icon"
+            style={
+              {
+                color: "black",
+                backgroundColor: "lightgray"
+              }
+            }
+          />
         )
       };
       break;

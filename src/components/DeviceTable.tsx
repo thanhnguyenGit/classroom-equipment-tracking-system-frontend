@@ -2,9 +2,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { devices } from '../data/mockData';
 
-const DevicesTable: React.FC = () => {
+const DevicesTable = () => {
   return (
-    <Card className="w-full">
+    <Card className="devtable">
       <CardHeader>
         <CardTitle>Devices Management</CardTitle>
       </CardHeader>

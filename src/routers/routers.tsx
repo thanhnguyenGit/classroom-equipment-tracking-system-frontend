@@ -5,7 +5,7 @@ import { Login } from "../views/Login";
 import { ChangePassword } from "../views/ChangePassword";
 import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { Dashboard } from "../views/Dashboard";
-
+import Devices from "../pages/Devices.tsx";
 export const routers = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +35,10 @@ export const routers = createBrowserRouter([
         path: "/change-password",
         element: <ChangePassword />,
       },
+      {
+        path: "/devices",
+        element: <Devices />,
+      }
     ],
   },
 ]);

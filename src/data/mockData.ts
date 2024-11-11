@@ -25,8 +25,8 @@ export const devices: Device[] = [
 
 export const tickets: Ticket[] = [
 	{ id: 1, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },
-	{ id: 1, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },
-	{ id: 1, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },
-	{ id: 1, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },
+	{ id: 2, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Rerturned' },
+	{ id: 3, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },
+	{ id: 4, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Overdue' },
 
 ];
