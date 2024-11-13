@@ -1,7 +1,7 @@
 export interface Device {
 	id: number;
 	name: string;
-	type: string;
+	location: string;
 	status: string;
 }
 
@@ -17,11 +17,17 @@ export interface Ticket {
 	status: string,
 }
 
-export const devices: Device[] = [
-	{ id: 1, name: 'Server 1', type: 'Web Server', status: 'Active' },
-	{ id: 2, name: 'Database Server', type: 'DB Server', status: 'Maintenance' },
-	{ id: 3, name: 'Backup Server', type: 'Storage', status: 'Active' }
+export const devicesRow: Device[] = [
+	{ id: 1, name: 'Microphobe', location: 'D9-202', status: 'Active' },
+	{ id: 2, name: 'Eletric Outlet', location: 'D9-202', status: 'Maintenance' },
+	{ id: 3, name: 'Diddy', location: 'Thai Nguyen', status: 'Active' }
 ];
+export const devicesCol = [
+	{ field: 'id', headerName: 'ID', width: 100 },
+	{ field: 'name', headrName: 'Name', width: 230 },
+	{ field: 'location', headrName: 'Location', width: 100 },
+	{ field: 'status', headrName: 'Status', width: 300 },
+]
 
 export const tickets: Ticket[] = [
 	{ id: 1, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Borrowed' },

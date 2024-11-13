@@ -1,6 +1,7 @@
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import "../styles/Devices.scss"
+import DevicesTable from "../components/DeviceTable";
 
 const Devices = () => {
   return (
@@ -8,9 +9,7 @@ const Devices = () => {
       <Sidebar />
       <div className="homeContainer">
         <Navbar />
-        <div className='listContainer'>
-          <div className='listTitle'>Devices table</div>
-        </div>
+        <DevicesTable />
       </div>
     </div>
   );

@@ -31,8 +31,7 @@ const Widget = ({ type }: { type: string }) => {
       break;
     case "devices":
       data = {
-        tilte: "Devices",
-        isMoney: false,
+        tilte: "Create Ticket",
         link: "See all devices",
         icon: (
           <DeviceHub className="icon"

@@ -1,17 +1,12 @@
+import { BrowserRouter, Router } from "react-router-dom";
 import "./App.scss";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/Dashboard"
-import Device from "./pages/Devices"
-
+import AppRouters from "./routers/routers";
 function App() {
   return (
     <div className="App">
-      <Routes>
-        <Route path="/">
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-
-      </Routes>
+      <BrowserRouter>
+        <AppRouters />
+      </BrowserRouter>
     </div>
   );
 }
