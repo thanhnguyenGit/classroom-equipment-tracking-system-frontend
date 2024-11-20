@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { SignInPage, type AuthProvider } from '@toolpad/core/SignInPage';
+import { AppProvider } from "@toolpad/core/AppProvider";
+import { SignInPage, type AuthProvider } from "@toolpad/core/SignInPage";
 import {
   Avatar,
   Box,
@@ -43,7 +43,7 @@ export const Login = () => {
         <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
           Sign In
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 1 }}>
+        <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={login}>
           <TextField
             placeholder="Enter username"
             fullWidth
