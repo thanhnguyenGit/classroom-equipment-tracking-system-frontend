@@ -1,0 +1,19 @@
+.table {
+    .ticketstatus {
+        padding : 5px;
+        border-radius : 5px;
+
+        &.Borrowed {
+            color : green;
+            background-color: rgba(61, 130, 65, 0.5);
+        }
+        &.Rerturned {
+            color : rgba(204, 188, 47, 0.5);
+            background-color: yellow;
+        }
+        &.Overdue {
+            color : red;
+            background-color: darkred;
+        }
+    }
+}

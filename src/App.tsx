@@ -1,19 +1,13 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { Outlet } from "react-router-dom";
-import { UserProvider } from "./context/useAuth";
-
+import { BrowserRouter, Router } from "react-router-dom";
+import "./App.scss";
+import AppRouters from "./routers/routers";
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <UserProvider>
-        <Outlet />
-      </UserProvider>
-    </>
+    <div className="App">
+      <BrowserRouter>
+        <AppRouters />
+      </BrowserRouter>
+    </div>
   );
 }
 
