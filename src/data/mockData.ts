@@ -17,6 +17,18 @@ export interface Ticket {
 	status: string,
 }
 
+export interface User {
+	id: number;
+	username: string;
+	password: string;
+}
+
+export const users: User[] = [
+	{ id: 1, username: 'admin', password: 'admin' },
+	{ id: 2, username: 'user', password: 'user' },
+	{ id: 3, username: 'test', password: 'test' }
+];
+
 export const devicesRow: Device[] = [
 	{ id: 1, name: 'Microphobe', location: 'D9-202', status: 'Active' },
 	{ id: 2, name: 'Eletric Outlet', location: 'D9-202', status: 'Maintenance' },
@@ -36,3 +48,4 @@ export const tickets: Ticket[] = [
 	{ id: 4, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Overdue' },
 
 ];
+

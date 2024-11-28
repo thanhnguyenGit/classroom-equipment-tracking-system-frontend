@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { LoginParams, useAuth } from "../context/useAuth";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { SignInPage, type AuthProvider } from "@toolpad/core/SignInPage";
 import {
@@ -20,7 +20,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 export const Login = () => {
   const { login } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const naviagte = useNavigate();
+  const handleSubmit = () => {
+    login({ username: username, password: password });
+  };
   return (
     // <div className="Login-container">
     //   <div className="title">Login</div>
@@ -43,25 +48,35 @@ export const Login = () => {
         <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
           Sign In
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={login}>
+        <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
             placeholder="Enter username"
+            value={username}
             fullWidth
             required
             autoFocus
             sx={{ mb: 2 }}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             placeholder="Enter password"
             fullWidth
             required
+            value={password}
             type="password"
+            sx={{ mb: 2 }}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
             Sign In
+          </Button>
+          <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
+            Change Password
           </Button>
         </Box>
       </Paper>
     </Container>
   );
 };
+
+export default Login;
