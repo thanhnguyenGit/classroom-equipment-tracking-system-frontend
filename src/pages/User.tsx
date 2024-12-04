@@ -12,9 +12,11 @@ import {
 } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import RegisterForm from "../components/RegisterForm";
 
 const User = () => {
   const [staff, setStaff] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,9 +33,17 @@ const User = () => {
   const handleDelete = async (id) => {
     try {
       await axios.post(`/api/staff/delete/${id}`);
-      setStaff(staff.filter((item) => item.id !== id)); 
+      setStaff(staff.filter((item) => item.id !== id));
     } catch (error) {
-      console.error("Error deleting staff:", error); 
+      console.error("Error deleting staff:", error);
+    }
+  };
+  const handleAddStaff = async (newStaff) => {
+    try {
+      const response = await axios.post("/api/staff/create", newStaff);
+      setStaff([...staff, response.data]);
+    } catch (error) {
+      console.error("Error creating new staff:", error);
     }
   };
 
@@ -44,6 +54,12 @@ const User = () => {
         <Navbar />
         <div className="widgets"></div>
         <div className="listContainer">
+          <Button variant="contained" onClick={() => setDialogOpen(true)}>Add new staff</Button>
+          <RegisterForm
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            onSubmit={handleAddStaff}
+          />
           <div className="listTitle"></div>
           <TableContainer component={Paper} className="table">
             <Table sx={{ minWidth: 650 }} aria-label="staff table">
