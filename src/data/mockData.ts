@@ -3,6 +3,7 @@ export interface Device {
 	name: string;
 	location: string;
 	status: string;
+	quantity: number;
 }
 
 export interface Ticket {
@@ -30,15 +31,16 @@ export const users: User[] = [
 ];
 
 export const devicesRow: Device[] = [
-	{ id: 1, name: 'Microphobe', location: 'D9-202', status: 'Active' },
-	{ id: 2, name: 'Eletric Outlet', location: 'D9-202', status: 'Maintenance' },
-	{ id: 3, name: 'Diddy', location: 'Thai Nguyen', status: 'Active' }
+	{ id: 1, name: 'Microphobe', location: 'D9-202', status: 'Active', quantity: 20 },
+	{ id: 2, name: 'Eletric Outlet', location: 'D9-202', status: 'Maintenance', quantity: 10 },
+	{ id: 3, name: 'Diddy', location: 'Thai Nguyen', status: 'Active', quantity: 5 }
 ];
 export const devicesCol = [
 	{ field: 'id', headerName: 'ID', width: 100 },
 	{ field: 'name', headrName: 'Name', width: 230 },
-	{ field: 'location', headrName: 'Location', width: 100 },
+	{ field: 'location', headrName: 'Location', width: 300 },
 	{ field: 'status', headrName: 'Status', width: 300 },
+	{ field: 'quantity', headrName: 'Quantity', width: 300 },
 ]
 
 export const tickets: Ticket[] = [
