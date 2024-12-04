@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginParams, useAuth } from "../context/useAuth";
 import { AppProvider } from "@toolpad/core/AppProvider";
@@ -17,15 +17,20 @@ import {
   Link,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-
+import axios from "axios";
 export const Login = () => {
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const naviagte = useNavigate();
   const handleSubmit = () => {
-    login({ username: username, password: password });
+    // login({ username: username, password: password });
+    axios.post("/api/staff/login", {
+      username,
+      password,
+    });
   };
+  useEffect(() => {}, []);
   return (
     // <div className="Login-container">
     //   <div className="title">Login</div>

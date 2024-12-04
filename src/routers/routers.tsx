@@ -6,6 +6,8 @@ import { UserProvider } from "../context/useAuth.tsx";
 import App from "../App.tsx";
 import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { ChangePassword } from "../pages/ChangePassword.tsx";
+import { Register } from "../pages/Register.tsx";
+import User from "../pages/User.tsx";
 // const AppRouters = () => {
 //   return (
 //     <Routes>
@@ -28,10 +30,14 @@ export const router = createBrowserRouter([
       </UserProvider>
     ),
     children: [
-      { path: "home"},
+      { path: "home" },
       {
         path: "",
         element: <Login />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
       },
       {
         path: "changepassword",
@@ -52,6 +58,10 @@ export const router = createBrowserRouter([
             <Devices />
           </ProtectedRouters>
         ),
+      },
+      {
+        path: "user",
+        element: <User />,
       },
     ],
   },
