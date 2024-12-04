@@ -2,7 +2,7 @@ import "../styles/Widget.scss";
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
 import ListSharp from '@mui/icons-material/ListSharp';
 import DeviceHub from '@mui/icons-material/DeviceHub'
-
+import NewDevicesMenu from "./NewDevicesMenu";
 const Widget = ({ type }: { type: string }) => {
   let data;
 
@@ -31,7 +31,9 @@ const Widget = ({ type }: { type: string }) => {
       break;
     case "devices":
       data = {
-        tilte: "Create Ticket",
+        tilte: <div className="New devices" >
+          <NewDevicesMenu />
+        </div>,
         link: "See all devices",
         icon: (
           <DeviceHub className="icon"
