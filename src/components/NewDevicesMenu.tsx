@@ -3,10 +3,11 @@ import Popup from 'reactjs-popup'
 import ClickableText from "./ClickableText";
 import "../styles/NewDevicesMenu.scss"
 import { TextField, Box, MenuItem, Snackbar } from "@mui/material";
+import { AddEquipment } from "../endpoint/equipment.tsx"
 function NewDevicesMenu() {
+  const [post, setPost] = React.useState(null);
   const ref = useRef<any>(null);
   const exit = () => ref.current.close();
-
   return (
     <Popup
       ref={ref}
@@ -35,7 +36,7 @@ function NewDevicesMenu() {
           </button>
         </div>
       </Box>
-    </Popup>
+    </Popup >
   );
 }
 

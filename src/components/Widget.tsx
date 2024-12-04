@@ -46,6 +46,7 @@ const Widget = ({ type }: { type: string }) => {
         </div>,
         link: <div className="See all devices">
           <ClickableText text="See all devices" onClick={() => {
+            console.log("clippy");
             <Link to="/devices" style={{ textDecoration: "none" }}>
             </Link>
           }} />

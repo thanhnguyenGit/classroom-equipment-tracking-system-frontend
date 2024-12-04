@@ -3,6 +3,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import PersonOutlineOutlined from '@mui/icons-material/PersonOutlineOutlined'
 import DeviceHub from '@mui/icons-material/DeviceHub'
 import { Link } from "react-router-dom";
+
 const Sidebar = () => {
   return (
     <div className='sidebar'>
