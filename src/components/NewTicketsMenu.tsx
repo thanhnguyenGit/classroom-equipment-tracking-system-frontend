@@ -15,12 +15,12 @@ function NewTicketsMenu() {
     setRows([...rows, ""]);
   };
 
-  const handleRemoveRow = (index) => {
+  const handleRemoveRow = (index: number) => {
     const updatedRows = rows.filter((_, i) => i !== index);
     setRows(updatedRows);
   };
 
-  const handleInputChange = (value, index) => {
+  const handleInputChange = (value: string, index: number) => {
     const updatedRows = [...rows];
     updatedRows[index] = value;
     setRows(updatedRows);
@@ -75,12 +75,7 @@ function NewTicketsMenu() {
           <button className="savebutton" onClick={() => {
             console.log("Save")
           }}>SAVE</button>
-          <button
-            className="exitbutton"
-            onClick={exit}
-          >
-            Thoat
-          </button>
+          <button className="exitbutton" onClick={exit}>Thoat</button>
         </div>
       </Box>
     </Popup>
