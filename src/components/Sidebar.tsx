@@ -8,16 +8,15 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="top">
-        <span className="logo">HUSTticket</span>
+        <span className="logo">HUST TICKETS</span>
       </div>
       <hr />
       <div className="center">
         <ul>
-          <p className="title">MAIN</p>
-          <Link to="/tickets" style={{ textDecoration: "none" }}>
+          <Link to="/dashboard" style={{ textDecoration: "none" }}>
             <li>
               <DashboardIcon className="icon" />
-              <span>Ticket</span>
+              <span>Dashboard</span>
             </li>
           </Link>
           <Link to="/devices" style={{ textDecoration: "none" }}>
@@ -26,7 +25,12 @@ const Sidebar = () => {
               <span>Device</span>
             </li>
           </Link>
-          <p className="title">Personal</p>
+          <Link to="/tickets" style={{ textDecoration: "none" }}>
+            <li>
+              <DeviceHub className="icon" />
+              <span>Ticket</span>
+            </li>
+          </Link>
           <Link to="/user" style={{ textDecoration: "none" }}>
             <li>
               <PersonOutlineOutlined className="icon" />

@@ -26,3 +26,4 @@ dist-ssr
 # Enviroment
 .env
 .vite.config.ts
+package-lock.json
