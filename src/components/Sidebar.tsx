@@ -3,7 +3,17 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonOutlineOutlined from "@mui/icons-material/PersonOutlineOutlined";
 import DeviceHub from "@mui/icons-material/DeviceHub";
 import { Link } from "react-router-dom";
+import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
+import { useAuth } from "../context/useAuth";
 const Sidebar = () => {
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    // Add logout functionality here
+    console.log("User logged out");
+    // Example: localStorage.clear();
+    // Redirect the user to the login page if needed
+  };
   return (
     <div className="sidebar">
       <div className="top">
@@ -32,6 +42,10 @@ const Sidebar = () => {
               <span>User</span>
             </li>
           </Link>
+          <li onClick={handleLogout} style={{ cursor: "pointer" }}>
+            <LogoutOutlined className="icon" />
+            <span>Logout</span>
+          </li>
         </ul>
       </div>
       <div className="bottom">
