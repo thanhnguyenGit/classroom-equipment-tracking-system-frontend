@@ -27,7 +27,7 @@ export type Staff = {
 const User = () => {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [filteredStaff, setFilteredStaff] = useState<Staff[]>([]);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [selectedStaff, setSelectedStaff] = useState<Staff>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -63,21 +63,7 @@ const User = () => {
     setDialogOpen(false);
   };
 
-  // Handle updating staff
-  // const handleUpdate = async (updatedStaff: Staff) => {
-  //   try {
-  //     const response = await axios.post("/api/staff/update", updatedStaff);
-  //     setStaff(
-  //       staff.map((item) =>
-  //         item.id === updatedStaff.id ? response.data : item
-  //       )
-  //     );
-      
-  //     setUpdateDialogOpen(false);
-  //   } catch (error) {
-  //     console.error("Error updating staff:", error);
-  //   }
-  // };
+  
   const handleUpdate = async (updatedStaff: Staff) => {
     try {
       await axios.post("/api/staff/update", updatedStaff);

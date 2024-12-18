@@ -25,8 +25,9 @@ export const UserProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    if (savedToken) {
-      setToken(savedToken);
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setToken("token");
     }
     setIsReady(true);
   }, []);
@@ -48,6 +49,7 @@ export const UserProvider = ({ children }: Props) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setToken(null);
     navigate("/");
   };
