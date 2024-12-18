@@ -22,7 +22,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
 import { Button } from '@mui/material';
-
+import UpdateDevicesMenu from './UpdateDeviceMenu';
 
 function labelDisplayedRows({
   from,
@@ -258,8 +258,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function TableSortAndSelection() {
-  const [editData, setEditData] = useState<UpdateDevice | null>(null);
-  const [device, setDevice] = useState<Device[]>([]);
+  const [device, setDevices] = useState<Device[]>([]);
+  const [deviceToEdit, setDeviceToEdit] = useState<UpdateDevice | null>(null);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Device>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -278,7 +278,7 @@ export default function TableSortAndSelection() {
           quantity: item.quantity,
           status: item.status,
         }));
-        setDevice(mapped_response);
+        setDevices(mapped_response);
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
@@ -286,21 +286,23 @@ export default function TableSortAndSelection() {
 
     fetchData();
     // Set up periodic refresh
-    const intervalId = setInterval(fetchData, 5000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
-  const rows = device;
+
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure")) {
+    console.log("Deleting item with ID:", id); // Check if this is logged when clicking Delete button
+    if (!window.confirm("Are you sure you want to delete this device?")) {
       return;
     }
+
     try {
       // Send a POST request to delete the item
       await axios.post(`/api/equipment/delete/${id}`);
-      setDevice(device.filter((item) => item.id !== id)); // Remove item from the state
+      setDevices(device.filter((item) => item.id !== id)); // Remove item from the state
       console.log(`Device with ID ${id} deleted successfully.`);
     } catch (error) {
       console.error("Error deleting device:", error);
@@ -308,255 +310,244 @@ export default function TableSortAndSelection() {
     }
   };
 
-  const handleEdit = (item: UpdateDevice) => {
-    setEditData(item);
-  }
-  const handleUpdate = async (id: number) => {
-    try {
-      await axios.post(`/api/equipment/update`, {
-        id: editData.id,
-        name: editData.name,
-        status: editData.status,
-        quantity: editData.quantity,
-      });
-
-      // Update the device state with the edited data
-      setDevice((prevDevice) =>
-        prevDevice.map((item) =>
-          item.id === editData.id ? { ...item, ...editData } : item
-        )
-      );
-
-      setEditData(null); // Close the edit form
-    } catch (error) {
-      console.error("Error updating device:", error);
-      alert("An error occurred while updating the device. Please try again.");
-    }
+  const rows = device;
+  const handleClosePopup = () => {
+    setDeviceToEdit(null); // Close the popup
   };
-}
-const handleRequestSort = (
-  event: React.MouseEvent<unknown>,
-  property: keyof Device,
-) => {
-  const isAsc = orderBy === property && order === 'asc';
-  setOrder(isAsc ? 'desc' : 'asc');
-  setOrderBy(property);
-};
-const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-  if (event.target.checked) {
-    const newSelected = rows.map((n) => n.id);
-    setSelected(newSelected);
-    return;
-  }
-  setSelected([]);
-};
-const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-  const selectedIndex = selected.indexOf(name);
-  let newSelected: readonly string[] = [];
-  if (selectedIndex === -1) {
-    newSelected = newSelected.concat(selected, name);
-  } else if (selectedIndex === 0) {
-    newSelected = newSelected.concat(selected.slice(1));
-  } else if (selectedIndex === selected.length - 1) {
-    newSelected = newSelected.concat(selected.slice(0, -1));
-  } else if (selectedIndex > 0) {
-    newSelected = newSelected.concat(
-      selected.slice(0, selectedIndex),
-      selected.slice(selectedIndex + 1),
-    );
-  }
-  setSelected(newSelected);
-};
-const handleChangePage = (newPage: number) => {
-  setPage(newPage);
-};
-const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
-  setRowsPerPage(parseInt(newValue!.toString(), 10));
-  setPage(0);
-};
-const getLabelDisplayedRowsTo = () => {
-  if (rows.length === -1) {
-    return (page + 1) * rowsPerPage;
-  }
-  return rowsPerPage === -1
-    ? rows.length
-    : Math.min(rows.length, (page + 1) * rowsPerPage);
-};
-// Avoid a layout jump when reaching the last page with empty rows.
-const emptyRows =
-  page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-return (
-  <Sheet variant="outlined"
-    sx={{ width: { xs: '90%', md: '1500px' }, borderRadius: '16px', top: { xs: '10%', md: '10px' }, left: '50px', backgroundColor: 'whitesmoke' }
+  // Update success callback
+  const handleUpdateSuccess = () => {
+    // Re-fetch the updated devices list after a successful update
+    const fetchDevices = async () => {
+      try {
+        const response = await axios.get("/api/equipment/list");
+        setDevices(response.data);
+      } catch (error) {
+        console.error("Error fetching devices:", error);
+      }
+    };
+    fetchDevices();
+  };
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Device,
+  ) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = rows.map((n) => n.id);
+      setSelected(newSelected);
+      return;
     }
-  >
-    <EnhancedTableToolbar numSelected={selected.length} />
-    <Table
-      aria-labelledby="tableTitle"
-      hoverRow
-      sx={{
-        '--TableCell-headBackground': 'transparent',
-        '--TableCell-selectedBackground': (theme) =>
-          theme.vars.palette.success.softBg,
-        '& thead th:nth-child(1)': {
-          width: '30px',
-        },
-        '& thead th:nth-child(2)': {
-          width: 'flex',
-        },
-        '& tr > *:nth-child(n+3)': { textAlign: 'center' },
-      }}
+    setSelected([]);
+  };
+  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected: readonly string[] = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+    setSelected(newSelected);
+  };
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+    setRowsPerPage(parseInt(newValue!.toString(), 10));
+    setPage(0);
+  };
+  const getLabelDisplayedRowsTo = () => {
+    if (rows.length === -1) {
+      return (page + 1) * rowsPerPage;
+    }
+    return rowsPerPage === -1
+      ? rows.length
+      : Math.min(rows.length, (page + 1) * rowsPerPage);
+  };
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  return (
+    <Sheet variant="outlined"
+      sx={{ width: { xs: '90%', md: '1500px' }, borderRadius: '16px', top: { xs: '10%', md: '10px' }, left: '50px', backgroundColor: 'whitesmoke' }
+      }
     >
-      <EnhancedTableHead
-        numSelected={selected.length}
-        order={order}
-        orderBy={orderBy}
-        onSelectAllClick={handleSelectAllClick}
-        onRequestSort={handleRequestSort}
-        rowCount={rows.length}
-      />
-      <tbody>
-        {[...rows]
-          .sort(getComparator(order, orderBy))
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((row, index) => {
-            const isItemSelected = selected.includes(row.id);
-            const labelId = `enhanced-table-checkbox-${index}`;
+      <EnhancedTableToolbar numSelected={selected.length} />
+      <Table
+        aria-labelledby="tableTitle"
+        hoverRow
+        sx={{
+          '--TableCell-headBackground': 'transparent',
+          '--TableCell-selectedBackground': (theme) =>
+            theme.vars.palette.success.softBg,
+          '& thead th:nth-child(1)': {
+            width: '30px',
+          },
+          '& thead th:nth-child(2)': {
+            width: 'flex',
+          },
+          '& tr > *:nth-child(n+3)': { textAlign: 'center' },
+        }}
+      >
+        <EnhancedTableHead
+          numSelected={selected.length}
+          order={order}
+          orderBy={orderBy}
+          onSelectAllClick={handleSelectAllClick}
+          onRequestSort={handleRequestSort}
+          rowCount={rows.length}
+        />
+        <tbody>
+          {[...rows]
+            .sort(getComparator(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((row, index) => {
+              const isItemSelected = selected.includes(row.id);
+              const labelId = `enhanced-table-checkbox-${index}`;
 
-            return (
-              <tr
-                onClick={(event) => handleClick(event, row.id)}
-                role="checkbox"
-                aria-checked={isItemSelected}
-                tabIndex={-1}
-                key={row.id}
-                // selected={isItemSelected}
-                style={
-                  isItemSelected
-                    ? ({
-                      '--TableCell-dataBackground':
-                        'var(--TableCell-selectedBackground)',
-                      '--TableCell-headBackground':
-                        'var(--TableCell-selectedBackground)',
-                    } as React.CSSProperties)
-                    : {}
-                }
-              >
-                <th scope="row">
-                  <Checkbox
-                    checked={isItemSelected}
-                    slotProps={{
-                      input: {
-                        'aria-labelledby': labelId,
-                      },
-                    }}
-                    sx={{ verticalAlign: 'top' }}
-                  />
-                </th>
-                <th id={labelId} scope="row">
-                  {row.id}
-                </th>
-                <td>{row.name}</td>
-                <td>{row.roomName}</td>
-                <td>{row.buildingName}</td>
-                <td>{row.status}</td>
-                <td>{row.quantity}</td>
-                <td>
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit(row);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(row.id);
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
-        {emptyRows > 0 && (
-          <tr
-            style={
-              {
-                height: `calc(${emptyRows} * 40px)`,
-                '--TableRow-hoverBackground': 'transparent',
-              } as React.CSSProperties
-            }
-          >
-            <td colSpan={7} aria-hidden />
-          </tr>
-        )}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colSpan={7}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                justifyContent: 'flex-end',
-              }}
-            >
-              <FormControl orientation="horizontal" size="sm">
-                <FormLabel>Rows per page:</FormLabel>
-                <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
-                  <Option value={5}>5</Option>
-                  <Option value={10}>10</Option>
-                  <Option value={25}>25</Option>
-                </Select>
-              </FormControl>
-              <Typography sx={{ textAlign: 'center', minWidth: 80 }}>
-                {labelDisplayedRows({
-                  from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                  to: getLabelDisplayedRowsTo(),
-                  count: rows.length === -1 ? -1 : rows.length,
-                })}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton
-                  size="sm"
-                  color="neutral"
-                  variant="outlined"
-                  disabled={page === 0}
-                  onClick={() => handleChangePage(page - 1)}
-                  sx={{ bgcolor: 'background.surface' }}
-                >
-                  <KeyboardArrowLeftIcon />
-                </IconButton>
-                <IconButton
-                  size="sm"
-                  color="neutral"
-                  variant="outlined"
-                  disabled={
-                    rows.length !== -1
-                      ? page >= Math.ceil(rows.length / rowsPerPage) - 1
-                      : false
+              return (
+                <tr
+                  onClick={(event) => handleClick(event, row.id)}
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={row.id}
+                  // selected={isItemSelected}
+                  style={
+                    isItemSelected
+                      ? ({
+                        '--TableCell-dataBackground':
+                          'var(--TableCell-selectedBackground)',
+                        '--TableCell-headBackground':
+                          'var(--TableCell-selectedBackground)',
+                      } as React.CSSProperties)
+                      : {}
                   }
-                  onClick={() => handleChangePage(page + 1)}
-                  sx={{ bgcolor: 'background.surface' }}
                 >
-                  <KeyboardArrowRightIcon />
-                </IconButton>
+                  <th scope="row">
+                    <Checkbox
+                      checked={isItemSelected}
+                      slotProps={{
+                        input: {
+                          'aria-labelledby': labelId,
+                        },
+                      }}
+                      sx={{ verticalAlign: 'top' }}
+                    />
+                  </th>
+                  <th id={labelId} scope="row">
+                    {row.id}
+                  </th>
+                  <td>{row.name}</td>
+                  <td>{row.roomName}</td>
+                  <td>{row.buildingName}</td>
+                  <td>{row.status}</td>
+                  <td>{row.quantity}</td>
+                  <td>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        < UpdateDevicesMenu deviceToEdit={deviceToEdit} onClose={handleClosePopup} onUpdateSuccess={handleUpdateSuccess} />
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(row.id);
+                      }}
+                    >
+                      Delete
+                    </Button></td>
+                </tr>
+              );
+            })}
+          {emptyRows > 0 && (
+            <tr
+              style={
+                {
+                  height: `calc(${emptyRows} * 40px)`,
+                  '--TableRow-hoverBackground': 'transparent',
+                } as React.CSSProperties
+              }
+            >
+              <td colSpan={7} aria-hidden />
+            </tr>
+          )}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={8}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <FormControl orientation="horizontal" size="sm">
+                  <FormLabel>Rows per page:</FormLabel>
+                  <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
+                    <Option value={5}>5</Option>
+                    <Option value={10}>10</Option>
+                    <Option value={25}>25</Option>
+                  </Select>
+                </FormControl>
+                <Typography sx={{ textAlign: 'center', minWidth: 80 }}>
+                  {labelDisplayedRows({
+                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    to: getLabelDisplayedRowsTo(),
+                    count: rows.length === -1 ? -1 : rows.length,
+                  })}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={page === 0}
+                    onClick={() => handleChangePage(page - 1)}
+                    sx={{ bgcolor: 'background.surface' }}
+                  >
+                    <KeyboardArrowLeftIcon />
+                  </IconButton>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={
+                      rows.length !== -1
+                        ? page >= Math.ceil(rows.length / rowsPerPage) - 1
+                        : false
+                    }
+                    onClick={() => handleChangePage(page + 1)}
+                    sx={{ bgcolor: 'background.surface' }}
+                  >
+                    <KeyboardArrowRightIcon />
+                  </IconButton>
+                </Box>
               </Box>
-            </Box>
-          </td>
-        </tr>
-      </tfoot>
-    </Table>
-  </Sheet >
-);
+            </td>
+          </tr>
+        </tfoot>
+      </Table>
+    </Sheet >
+  );
 }
-
