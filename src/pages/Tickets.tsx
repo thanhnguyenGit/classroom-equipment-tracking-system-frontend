@@ -1,11 +1,11 @@
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import "../styles/Devices.scss"
-import TableSortAndSelection from "../components/DeviceTable";
+import "../styles/Tickets.scss"
+import TableSortAndSelection from "../components/TicketTable";
 
-const Devices = () => {
+const Tickets = () => {
   return (
-    <div className="devices">
+    <div className="tickets">
       <Sidebar />
       <div className="homeContainer">
         <Navbar />
@@ -15,4 +15,4 @@ const Devices = () => {
   );
 };
 
-export default Devices;
+export default Tickets;

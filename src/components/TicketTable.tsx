@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import "../styles/DevicesTable.scss";
-import { devicesRow, devicesCol, Device, createDevice } from '../data/mockData';
+import "../styles/TicketsTable.scss";
+import { ticketsRow, ticketsCol, Ticket, Items, createTicket } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -10,6 +10,7 @@ import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import IconButton from '@mui/joy/IconButton';
+import { MoreVertRounded } from '@mui/icons-material';
 import Link from '@mui/joy/Link';
 import Tooltip from '@mui/joy/Tooltip';
 import Select from '@mui/joy/Select';
@@ -23,20 +24,19 @@ import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
 
 // const rows = [
-//   createDevice(1, 'Microphone', 'D9-302', 'Active', 20),
-//   createDevice(2, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(3, 'Microphone', 'D7-202', 'Active', 20),
-//   createDevice(4, 'Microphone', 'C3-202', 'Active', 20),
-//   createDevice(5, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(6, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(7, 'Microphone', 'D8-202', 'Active', 20),
-//   createDevice(8, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(9, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(10, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(11, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(12, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(13, 'Microphone', 'D9-202', 'Active', 20),
+//   createTicket(1, '20207633', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(2, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(3, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(4, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(5, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(6, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(7, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(8, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(9, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(10, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
 // ];
+//
+//
 function labelDisplayedRows({
   from,
   to,
@@ -73,25 +73,18 @@ function getComparator<Key extends keyof any>(
 }
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Device;
+  id: keyof Ticket;
   label: string;
   numeric: boolean;
 }
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Device) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Ticket) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
 }
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof Device;
-  label: string;
-  numeric: boolean;
-}
-
 const headCells: readonly HeadCell[] = [
   {
     id: 'id',
@@ -100,47 +93,56 @@ const headCells: readonly HeadCell[] = [
     label: 'Id',
   },
   {
-    id: 'name',
+    id: 'borrowerName',
     numeric: true,
     disablePadding: false,
-    label: 'Name',
+    label: 'Ten nguoi muon',
   },
   {
-    id: 'roomName',
+    id: 'staffName',
     numeric: true,
     disablePadding: false,
-    label: 'Room Name',
+    label: 'ten nhan vien',
   },
   {
-    id: 'buildingName',
+    id: 'borrowTime',
     numeric: true,
     disablePadding: false,
-    label: 'Building Name',
+    label: 'thoi gian muon',
+  },
+
+  {
+    id: 'returnDeadline',
+    numeric: true,
+    disablePadding: false,
+    label: 'thoi gian tra',
   },
   {
     id: 'status',
     numeric: true,
     disablePadding: false,
-    label: 'Status',
+    label: 'trang thai',
   },
   {
-    id: 'quantity',
+    id: 'items',
     numeric: true,
     disablePadding: false,
-    label: 'Quantity',
+    label: 'Thiet bi',
   },
   {
-    id: 'quantity',
+    id: 'actions',
     numeric: true,
     disablePadding: false,
-    label: 'Quantity',
+    label: '',
   },
+
+
 ];
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
     props;
   const createSortHandler =
-    (property: keyof Device) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof Ticket) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -251,7 +253,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Devices
+          Tickets
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -271,26 +273,37 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function TableSortAndSelection() {
-  const [device, setDevice] = useState<Device[]>([]);
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Device>('id');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [ticket, setTicket] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/equipment/list");
+        const response = await axios.get("/api/order/list", {
+          params: {
+            sort: "ASC",
+            sortBy: "BORROW_TIME"
+          }
+        });
         const mapped_response = response.data.map((item: any) => ({
           id: item.id,
-          name: item.name,
-          roomName: item.room?.roomName ?? "Unknown",
-          buildingName: item.room?.building?.buildingName ?? "Unknown",
-          quantity: item.quantity,
+          borrowerName: item.borrowerName,
+          staffName: item.staffName,
+          borrowTime: item.borrowTime,
+          returnDeadline: item.returnDeadline,
+          items: item.items.map((equipment: any) => ({
+            equipmentName: equipment.equipmentName,
+            quantity: equipment.quantity
+          })),
+          returnTime: item.returnTime,
           status: item.status,
+          actions: (<IconButton onClick={() => handleActionClick(item.id)}>
+            <MoreVertRounded />
+          </IconButton>)
         }));
-        setDevice(mapped_response);
+        setTicket(mapped_response);
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
@@ -298,17 +311,36 @@ export default function TableSortAndSelection() {
 
     fetchData();
   }, []);
-
-  const rows = device;
-
+  const rows = ticket;
+  // format items for display
+  const formatItems = (items: Items[]) => {
+    return items.map(item =>
+      `${item.equipmentName}(${item.quantity})`
+    ).join(', ');
+  };
+  // format time
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<keyof Ticket>('id');
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Device,
+    property: keyof Ticket,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+  const handleActionClick = (id: number) => {
+    console.log("clicked")
+  }
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.id);
@@ -423,11 +455,13 @@ export default function TableSortAndSelection() {
                   <th id={labelId} scope="row">
                     {row.id}
                   </th>
-                  <td>{row.name}</td>
-                  <td>{row.roomName}</td>
-                  <td>{row.buildingName}</td>
+                  <td>{row.borrowerName}</td>
+                  <td>{row.staffName}</td>
+                  <td>{formatTime(row.borrowTime)}</td>
+                  <td>{formatTime(row.returnDeadline)}</td>
                   <td>{row.status}</td>
-                  <td>{row.quantity}</td>
+                  <td>{formatItems(row.items)}</td>
+                  <td>{row.actions}</td>
                 </tr>
               );
             })}
@@ -440,13 +474,13 @@ export default function TableSortAndSelection() {
                 } as React.CSSProperties
               }
             >
-              <td colSpan={7} aria-hidden />
+              <td colSpan={9} aria-hidden />
             </tr>
           )}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={7}>
+            <td colSpan={9}>
               <Box
                 sx={{
                   display: 'flex',
@@ -504,4 +538,3 @@ export default function TableSortAndSelection() {
     </Sheet >
   );
 }
-
