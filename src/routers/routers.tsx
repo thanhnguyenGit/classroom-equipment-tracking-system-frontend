@@ -44,9 +44,9 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          // <ProtectedRouters>
-          <Dashboard />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Dashboard />
+          </ProtectedRouters>
         ),
       },
       {
@@ -60,17 +60,17 @@ export const router = createBrowserRouter([
       {
         path: "devices",
         element: (
-          // <ProtectedRouters>
-          <Devices />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Devices />
+          </ProtectedRouters>
         ),
       },
       {
         path: "tickets",
         element: (
-          // <ProtectedRouters>
-          <Tickets />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Tickets />
+          </ProtectedRouters>
         ),
       },
       {

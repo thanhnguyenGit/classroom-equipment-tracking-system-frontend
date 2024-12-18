@@ -8,6 +8,7 @@ export interface Device {
 	buildingName: string,
 	status: 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
 	quantity: number,
+	action: null,
 }
 
 export interface Ticket {
@@ -43,6 +44,16 @@ export interface NewDevice {
 	name: string,
 	roomId: number,
 	quantity: number,
+}
+export interface UpdateDevice {
+	id: number,
+	name: string,
+	status: DeviceStatus,
+	quantity: number,
+}
+type DeviceStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
+export interface RoomListId {
+	roomId: number,
 }
 export function createDevice(
 	id: number,
