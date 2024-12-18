@@ -1,8 +1,21 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
+import { Staff } from "../pages/User";
 
-const UpdateStaffForm = ({ open, onClose, onSubmit, staffData }) => {
+interface UpdateStaffFormProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: Staff) => void;
+  staffData: Staff | undefined;
+}
+
+const UpdateStaffForm = ({
+  open,
+  onClose,
+  onSubmit,
+  staffData,
+}: UpdateStaffFormProps) => {
   const building = [
     { value: "D7", label: "D7" },
     { value: "D9", label: "D9" },
@@ -18,28 +31,34 @@ const UpdateStaffForm = ({ open, onClose, onSubmit, staffData }) => {
     { value: "C7", label: "C7" },
   ];
 
-  const [formData, setFormData] = useState({
-    id: staffData?.id || "", // Pre-fill ID for updates
-    name: staffData?.name || "",
-    phone: staffData?.phone || "",
-    buildingName: staffData?.buildingName || "",
-  });
+  const [formData, setFormData] = useState<Staff>(
+    staffData || { id: "", name: "", email: "", phone: "", buildingName: "" }
+  );
 
-  const handleChange = (e) => {
-    const { id, name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id || name]: value }));
+  useEffect(() => {
+    if (staffData) {
+      setFormData({ ...staffData });
+    }
+  }, [staffData]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = () => {
-    const { id, name, phone, buildingName } = formData;
+    const { name, phone, buildingName } = formData;
     if (!name || !phone || !buildingName) {
       alert("Please fill all fields.");
       return;
     }
     onSubmit(formData);
     onClose();
-    setFormData({ id: "", name: "", phone: "", buildingName: "" });
   };
+
+  if (!staffData) return null;
 
   return (
     <Popup open={open} modal nested onClose={onClose}>
@@ -53,17 +72,28 @@ const UpdateStaffForm = ({ open, onClose, onSubmit, staffData }) => {
         <div className="header">Update Staff</div>
         <TextField
           fullWidth
-          id="name"
+          name="name"
           label="Name"
           value={formData.name}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          id="phone"
+          name="phone"
           label="Phone"
           value={formData.phone}
           onChange={handleChange}
+          type="number"
+          sx={{
+            "& input[type=number]": {
+              MozAppearance: "textfield", // Remove spin buttons in Firefox
+            },
+            "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+              {
+                WebkitAppearance: "none", // Remove spin buttons in Chrome, Edge, and Safari
+                margin: 0,
+              },
+          }}
         />
         <TextField
           fullWidth

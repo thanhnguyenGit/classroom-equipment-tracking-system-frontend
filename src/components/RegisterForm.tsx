@@ -85,18 +85,33 @@ const RegisterForm = ({ open, onClose, onSubmit }) => {
           id="phone"
           label="Phone"
           value={formData.phone}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d*$/.test(value)) {
+              // Chỉ chấp nhận chữ số
+              handleChange(e);
+            }
+          }}
           margin="normal"
           variant="outlined"
+          type="text"
         />
+
         <TextField
           fullWidth
           id="email"
           label="Email"
           value={formData.email}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+              // Kiểm tra email hợp lệ
+            }
+            handleChange(e);
+          }}
           margin="normal"
           variant="outlined"
+          type="email"
         />
         <TextField
           fullWidth

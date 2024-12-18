@@ -9,6 +9,7 @@ import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { ChangePassword } from "../pages/ChangePassword.tsx";
 import { Register } from "../pages/Register.tsx";
 import User from "../pages/User.tsx";
+import { FirstLogin } from "../pages/FirstLogin.tsx";
 // const AppRouters = () => {
 //   return (
 //     <Routes>
@@ -46,6 +47,14 @@ export const router = createBrowserRouter([
           // <ProtectedRouters>
           <Dashboard />
           // </ProtectedRouters>
+        ),
+      },
+      {
+        path: "firstLogin",
+        element: (
+          <ProtectedRouters>
+            <ChangePassword />
+          </ProtectedRouters>
         ),
       },
       {
