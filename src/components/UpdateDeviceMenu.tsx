@@ -4,13 +4,25 @@ import ClickableText from "./ClickableText";
 import "../styles/NewDevicesMenu.scss"
 import { TextField, Box, MenuItem, Snackbar } from "@mui/material";
 import { AddEquipment } from "../endpoint/equipment.tsx"
-import { NewDevice } from "../data/mockData.ts";
+import { NewDevice, RoomListId, UpdateDevice } from "../data/mockData.ts";
 import axios from "axios";
 
-function NewDevicesMenu() {
-  const [formData, setFormData] = useState<NewDevice>({
+
+interface UpdateDevicesMenuProps {
+  deviceToEdit: UpdateDevice | null;
+  onClose: () => void;
+  onUpdateSuccess: () => void;
+}
+
+function UpdateDevicesMenu({
+  deviceToEdit,
+  onClose,
+  onUpdateSuccess,
+}: UpdateDevicesMenuProps) {
+  const [formData, setFormData] = useState<UpdateDevice>({
+    id: 0,
     name: "",
-    roomId: 0,
+    status: "AVAILABLE",
     quantity: 0,
   });
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -18,7 +30,14 @@ function NewDevicesMenu() {
   const [loading, setLoading] = useState(false);
   const ref = useRef<any>(null);
 
-  // handle input change and update state
+  // Initialize the formData with the device data to edit
+  React.useEffect(() => {
+    if (deviceToEdit) {
+      setFormData(deviceToEdit);
+    }
+  }, [deviceToEdit]);
+
+  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData({
@@ -27,9 +46,9 @@ function NewDevicesMenu() {
     });
   };
 
-  // handle adding new device
+  // Handle saving the edited device
   const handleSave = async () => {
-    if (!formData.name || !formData.roomId || formData.quantity <= 0) {
+    if (!formData.name || formData.quantity <= 0) {
       setSnackbarMessage("Please fill in all fields correctly.");
       setOpenSnackbar(true);
       return;
@@ -38,15 +57,15 @@ function NewDevicesMenu() {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/equipment/add", formData);
-      console.log("Device created successfully:", response.data);
-      setSnackbarMessage("Device created successfully!");
+      const response = await axios.post("/api/equipment/update", formData);
+      console.log("Device updated successfully:", response.data);
+      setSnackbarMessage("Device updated successfully!");
       setOpenSnackbar(true);
-      setFormData({ name: "", roomId: 0, quantity: 0 }); // reset form data
-      ref.current.close(); // close popup
+      onUpdateSuccess(); // Trigger update success handler
+      ref.current.close(); // Close the popup
     } catch (error) {
-      console.error("Error creating device:", error);
-      setSnackbarMessage("Error creating device.");
+      console.error("Error updating device:", error);
+      setSnackbarMessage("Error updating device.");
       setOpenSnackbar(true);
     } finally {
       setLoading(false);
@@ -54,41 +73,32 @@ function NewDevicesMenu() {
   };
 
   const exit = () => {
-    setFormData({ name: "", roomId: 0, quantity: 0 }); // reset form when exiting
-    ref.current.close();
+    setFormData({ id: 0, name: "", status: "AVAILABLE", quantity: 0 }); // reset form when exiting
+    onClose(); // Close the popup menu
   };
 
   return (
     <>
-      <Popup
-        ref={ref}
-        trigger={<ClickableText text="Add devices" onClick={() => { }} />}
-        modal
-        nested
-      >
-        <Box className="modal" component="form" sx={{ display: "flex", flexWrap: 'wrap' }} noValidate autoComplete="off">
-          <div className="header"> Add devices </div>
+      <Popup ref={ref} open={deviceToEdit !== null} modal nested>
+        <Box
+          className="modal"
+          component="form"
+          sx={{ display: "flex", flexWrap: "wrap" }}
+          noValidate
+          autoComplete="off"
+        >
+          <div className="header">Edit Device</div>
           <div className="content">
             <TextField
               fullWidth
-              className="Id"
-              required
-              id="roomId"
-              label="Room ID"
-              value={formData.roomId}
-              onChange={handleInputChange}
-              variant="outlined"
-              margin="dense"
-            />
-            <TextField
-              fullWidth
               className="Name"
+              required
               id="name"
               label="Device Name"
               value={formData.name}
               onChange={handleInputChange}
-              margin="normal"
               variant="outlined"
+              margin="normal"
             />
             <TextField
               fullWidth
@@ -127,5 +137,4 @@ function NewDevicesMenu() {
     </>
   );
 }
-
-export default NewDevicesMenu;
+export default UpdateDevicesMenu;

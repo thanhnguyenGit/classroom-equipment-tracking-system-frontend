@@ -21,10 +21,11 @@ const Widget = ({ type }: { type: string }) => {
         </div>,
         amount: false,
         link: <div className="See all tickets">
-          <ClickableText text="See all tickets" onClick={() => {
-            <Link to="/tickets" style={{ textDecoration: "none" }}>
-            </Link>
-          }} />
+          <Link to="/tickets" style={{ textDecoration: "none" }}>
+            <ClickableText text="See all tickets" onClick={() => {
+              console.log("navigate to dashboard");
+            }} />
+          </Link>
         </div>,
         icon: (
           <ListSharp
@@ -45,10 +46,11 @@ const Widget = ({ type }: { type: string }) => {
           <NewDevicesMenu />
         </div>,
         link: <div className="See all devices">
-          <ClickableText text="See all devices" onClick={() => {
-            <Link to="/devices" style={{ textDecoration: "none" }}>
-            </Link>
-          }} />
+          <Link to="/devices" style={{ textDecoration: "none" }}>
+            <ClickableText text="See all devices" onClick={() => {
+              console.log("navigate to devices");
+            }} />
+          </Link>
         </div>,
         icon: (
           <DeviceHub className="icon"
