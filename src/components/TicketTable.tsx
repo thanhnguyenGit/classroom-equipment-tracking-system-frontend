@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/TicketsTable.scss";
-import { ticketsRow, ticketsCol, Ticket, createTicket } from '../data/mockData';
+import { ticketsRow, ticketsCol, Ticket, Items, createTicket } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -10,6 +10,7 @@ import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import IconButton from '@mui/joy/IconButton';
+import { MoreVertRounded } from '@mui/icons-material';
 import Link from '@mui/joy/Link';
 import Tooltip from '@mui/joy/Tooltip';
 import Select from '@mui/joy/Select';
@@ -21,39 +22,21 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
-import { Paper } from '@mui/material';
-import { Pageview } from '@mui/icons-material';
-import { isOverflown } from '@mui/x-data-grid/utils/domUtils';
 
-// const paginationModel = { page: 0, pageSize: 5 };
-// const TicketsTable = () => {
-//   return (
-//     <div className='ticketstable'>
-//       <DataGrid
-//         rows={ticketsRow}
-//         columns={ticketsCol}
-//         initialState={{ pagination: { paginationModel } }}
-//         pageSizeOptions={[5, 10]}
-//         checkboxSelection
-//         sx={{ border: 0 }}
-//       />
-//     </div>
-//   );
-// };
+// const rows = [
+//   createTicket(1, '20207633', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(2, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(3, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(4, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(5, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(6, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(7, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(8, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(9, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+//   createTicket(10, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
+// ];
 //
 //
-const rows = [
-  createTicket(1, '20207633', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(2, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(3, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(4, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(5, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(6, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(7, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(8, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(9, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-  createTicket(10, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-];
 function labelDisplayedRows({
   from,
   to,
@@ -102,13 +85,6 @@ interface EnhancedTableProps {
   orderBy: string;
   rowCount: number;
 }
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof Ticket;
-  label: string;
-  numeric: boolean;
-}
-
 const headCells: readonly HeadCell[] = [
   {
     id: 'id',
@@ -117,54 +93,49 @@ const headCells: readonly HeadCell[] = [
     label: 'Id',
   },
   {
-    id: 'borrower_id',
+    id: 'borrowerName',
     numeric: true,
     disablePadding: false,
-    label: 'BorrowerId',
+    label: 'Ten nguoi muon',
   },
   {
-    id: 'name',
+    id: 'staffName',
     numeric: true,
     disablePadding: false,
-    label: 'Name',
+    label: 'ten nhan vien',
   },
   {
-    id: 'tag',
+    id: 'borrowTime',
     numeric: true,
     disablePadding: false,
-    label: 'Tag',
+    label: 'thoi gian muon',
   },
 
   {
-    id: 'device',
+    id: 'returnDeadline',
     numeric: true,
     disablePadding: false,
-    label: 'Device',
-  },
-  {
-    id: 'borrow_time',
-    numeric: true,
-    disablePadding: false,
-    label: 'BorrowTime',
-  },
-  {
-    id: 'expected_return_in',
-    numeric: true,
-    disablePadding: false,
-    label: 'ExpRetTime',
-  },
-  {
-    id: 'return_time',
-    numeric: true,
-    disablePadding: false,
-    label: 'ReturnTime',
+    label: 'thoi gian tra',
   },
   {
     id: 'status',
     numeric: true,
     disablePadding: false,
-    label: 'Status',
+    label: 'trang thai',
   },
+  {
+    id: 'items',
+    numeric: true,
+    disablePadding: false,
+    label: 'Thiet bi',
+  },
+  {
+    id: 'actions',
+    numeric: true,
+    disablePadding: false,
+    label: '',
+  },
+
 
 ];
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -302,6 +273,58 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function TableSortAndSelection() {
+  const [ticket, setTicket] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/order/list", {
+          params: {
+            sort: "ASC",
+            sortBy: "BORROW_TIME"
+          }
+        });
+        const mapped_response = response.data.map((item: any) => ({
+          id: item.id,
+          borrowerName: item.borrowerName,
+          staffName: item.staffName,
+          borrowTime: item.borrowTime,
+          returnDeadline: item.returnDeadline,
+          items: item.items.map((equipment: any) => ({
+            equipmentName: equipment.equipmentName,
+            quantity: equipment.quantity
+          })),
+          returnTime: item.returnTime,
+          status: item.status,
+          actions: (<IconButton onClick={() => handleActionClick(item.id)}>
+            <MoreVertRounded />
+          </IconButton>)
+        }));
+        setTicket(mapped_response);
+      } catch (error) {
+        console.error("Error fetching ticket data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const rows = ticket;
+  // format items for display
+  const formatItems = (items: Items[]) => {
+    return items.map(item =>
+      `${item.equipmentName}(${item.quantity})`
+    ).join(', ');
+  };
+  // format time
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Ticket>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -315,6 +338,9 @@ export default function TableSortAndSelection() {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+  const handleActionClick = (id: number) => {
+    console.log("clicked")
+  }
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.id);
@@ -429,14 +455,13 @@ export default function TableSortAndSelection() {
                   <th id={labelId} scope="row">
                     {row.id}
                   </th>
-                  <td>{row.borrower_id}</td>
-                  <td>{row.name}</td>
-                  <td>{row.tag}</td>
-                  <td>{row.device}</td>
-                  <td>{row.borrow_time}</td>
-                  <td>{row.expected_return_in}</td>
-                  <td>{row.return_time}</td>
+                  <td>{row.borrowerName}</td>
+                  <td>{row.staffName}</td>
+                  <td>{formatTime(row.borrowTime)}</td>
+                  <td>{formatTime(row.returnDeadline)}</td>
                   <td>{row.status}</td>
+                  <td>{formatItems(row.items)}</td>
+                  <td>{row.actions}</td>
                 </tr>
               );
             })}
@@ -449,13 +474,13 @@ export default function TableSortAndSelection() {
                 } as React.CSSProperties
               }
             >
-              <td colSpan={10} aria-hidden />
+              <td colSpan={9} aria-hidden />
             </tr>
           )}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={10}>
+            <td colSpan={9}>
               <Box
                 sx={{
                   display: 'flex',
@@ -513,4 +538,3 @@ export default function TableSortAndSelection() {
     </Sheet >
   );
 }
-// export default TicketsTable;

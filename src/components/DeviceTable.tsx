@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/DevicesTable.scss";
 import { devicesRow, devicesCol, Device, createDevice } from '../data/mockData';
@@ -20,39 +20,23 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
+import axios from 'axios';
 
-// const paginationModel = { page: 0, pageSize: 5 };
-// const DevicesTable = () => {
-//   return (
-//     <div className='devicestable'>
-//       <DataGrid
-//         rows={devicesRow}
-//         columns={devicesCol}
-//         initialState={{ pagination: { paginationModel } }}
-//         pageSizeOptions={[5, 10]}
-//         checkboxSelection
-//         sx={{ border: 0 }}
-//       />
-//     </div>
-//   );
-// };
-//
-// export default DevicesTable;
-const rows = [
-  createDevice(1, 'Microphone', 'D9-302', 'Active', 20),
-  createDevice(2, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(3, 'Microphone', 'D7-202', 'Active', 20),
-  createDevice(4, 'Microphone', 'C3-202', 'Active', 20),
-  createDevice(5, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(6, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(7, 'Microphone', 'D8-202', 'Active', 20),
-  createDevice(8, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(9, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(10, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(11, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(12, 'Microphone', 'D9-202', 'Active', 20),
-  createDevice(13, 'Microphone', 'D9-202', 'Active', 20),
-];
+// const rows = [
+//   createDevice(1, 'Microphone', 'D9-302', 'Active', 20),
+//   createDevice(2, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(3, 'Microphone', 'D7-202', 'Active', 20),
+//   createDevice(4, 'Microphone', 'C3-202', 'Active', 20),
+//   createDevice(5, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(6, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(7, 'Microphone', 'D8-202', 'Active', 20),
+//   createDevice(8, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(9, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(10, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(11, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(12, 'Microphone', 'D9-202', 'Active', 20),
+//   createDevice(13, 'Microphone', 'D9-202', 'Active', 20),
+// ];
 function labelDisplayedRows({
   from,
   to,
@@ -122,16 +106,28 @@ const headCells: readonly HeadCell[] = [
     label: 'Name',
   },
   {
+    id: 'roomName',
+    numeric: true,
+    disablePadding: false,
+    label: 'Room Name',
+  },
+  {
+    id: 'buildingName',
+    numeric: true,
+    disablePadding: false,
+    label: 'Building Name',
+  },
+  {
     id: 'status',
     numeric: true,
     disablePadding: false,
     label: 'Status',
   },
   {
-    id: 'location',
+    id: 'quantity',
     numeric: true,
     disablePadding: false,
-    label: 'Location',
+    label: 'Quantity',
   },
   {
     id: 'quantity',
@@ -275,11 +271,36 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function TableSortAndSelection() {
+  const [device, setDevice] = useState<Device[]>([]);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Device>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/equipment/list");
+        const mapped_response = response.data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          roomName: item.room?.roomName ?? "Unknown",
+          buildingName: item.room?.building?.buildingName ?? "Unknown",
+          quantity: item.quantity,
+          status: item.status,
+        }));
+        setDevice(mapped_response);
+      } catch (error) {
+        console.error("Error fetching ticket data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const rows = device;
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Device,
@@ -403,7 +424,8 @@ export default function TableSortAndSelection() {
                     {row.id}
                   </th>
                   <td>{row.name}</td>
-                  <td>{row.location}</td>
+                  <td>{row.roomName}</td>
+                  <td>{row.buildingName}</td>
                   <td>{row.status}</td>
                   <td>{row.quantity}</td>
                 </tr>
@@ -418,13 +440,13 @@ export default function TableSortAndSelection() {
                 } as React.CSSProperties
               }
             >
-              <td colSpan={6} aria-hidden />
+              <td colSpan={7} aria-hidden />
             </tr>
           )}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={6}>
+            <td colSpan={7}>
               <Box
                 sx={{
                   display: 'flex',

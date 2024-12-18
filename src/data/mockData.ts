@@ -1,21 +1,48 @@
+import { ReactNode } from "react"
+import { IconType } from "react-icons/lib"
+
 export interface Device {
 	id: number,
 	name: string,
-	location: string,
-	status: string,
+	roomName: string,
+	buildingName: string,
+	status: 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
 	quantity: number,
 }
 
 export interface Ticket {
 	id: number,
-	borrower_id: string,
+	borrowerName: string,
+	staffName: string,
+	borrowTime: string,
+	returnDeadline: string,
+	status: 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'CANCELED',
+	items: Array<Items>,
+	actions?: ReactNode
+}
+export interface Items {
+	id: number,
+	equipmentName: string,
+	quantity: number,
+	status: 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST',
+	notes: string,
+}
+export interface NewTicket {
+	borrowerId: number,
+	staffId: number,
+	borrowTime: string,
+	returnDeadline: string,
+	items: Array<NewTicketItems>,
+}
+export interface NewTicketItems {
+	equipmentId: number,
+	quantity: number,
+	notes: string,
+}
+export interface NewDevice {
 	name: string,
-	tag: string,
-	borrow_time: string,
-	expected_return_in: string,
-	return_time: string,
-	device: string,
-	status: string,
+	roomId: number,
+	quantity: number,
 }
 export function createDevice(
 	id: number,
