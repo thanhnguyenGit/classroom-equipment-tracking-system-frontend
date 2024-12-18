@@ -1,140 +1,121 @@
-import React, { useRef, useState, useEffect } from "react";
-import Popup from 'reactjs-popup'
-import ClickableText from "./ClickableText";
-import "../styles/NewDevicesMenu.scss"
-import { TextField, Box, MenuItem, Snackbar } from "@mui/material";
-import { AddEquipment } from "../endpoint/equipment.tsx"
-import { NewDevice, RoomListId, UpdateDevice } from "../data/mockData.ts";
-import axios from "axios";
 
+import { useState, useEffect } from "react";
+import Popup from "reactjs-popup";
+import { Box, TextField, Button, MenuItem } from "@mui/material";
+import { UpdateDevice } from "../data/mockData";
 
-interface UpdateDevicesMenuProps {
-  deviceToEdit: UpdateDevice | null;
+interface UpdateDeviceFormProps {
+  open: boolean;
   onClose: () => void;
-  onUpdateSuccess: () => void;
+  onSubmit: (data: UpdateDevice) => void;
+  deviceData: UpdateDevice;
 }
 
-function UpdateDevicesMenu({
-  deviceToEdit,
+const UpdateDeviceForm = ({
+  open,
   onClose,
-  onUpdateSuccess,
-}: UpdateDevicesMenuProps) {
-  const [formData, setFormData] = useState<UpdateDevice>({
-    id: 0,
-    name: "",
-    status: "AVAILABLE",
-    quantity: 0,
-  });
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const ref = useRef<any>(null);
+  onSubmit,
+  deviceData,
+}: UpdateDeviceFormProps) => {
+  const statuses = [
+    "AVAILABLE",
+    "UNAVAILABLE",
+    "BORROWED",
+    "DAMAGED",
+    "NORMAL",
+    "LOST",
+  ];
 
-  // Initialize the formData with the device data to edit
-  React.useEffect(() => {
-    if (deviceToEdit) {
-      setFormData(deviceToEdit);
+  const [formData, setFormData] = useState<UpdateDevice>(
+    deviceData || { id: 0, name: "", status: "AVAILABLE", quantity: 0 }
+  );
+
+  useEffect(() => {
+    if (deviceData) {
+      setFormData({ ...deviceData });
     }
-  }, [deviceToEdit]);
+  }, [deviceData]);
 
-  // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData({
-      ...formData,
-      [id]: value,
-    });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle saving the edited device
   const handleSave = async () => {
-    if (!formData.name || formData.quantity <= 0) {
-      setSnackbarMessage("Please fill in all fields correctly.");
-      setOpenSnackbar(true);
+    const { name, status, quantity } = formData;
+    if (!name || !status || quantity <= 0) {
+      alert("Please fill all fields.");
       return;
     }
-
-    setLoading(true);
-
-    try {
-      const response = await axios.post("/api/equipment/update", formData);
-      console.log("Device updated successfully:", response.data);
-      setSnackbarMessage("Device updated successfully!");
-      setOpenSnackbar(true);
-      onUpdateSuccess(); // Trigger update success handler
-      ref.current.close(); // Close the popup
-    } catch (error) {
-      console.error("Error updating device:", error);
-      setSnackbarMessage("Error updating device.");
-      setOpenSnackbar(true);
-    } finally {
-      setLoading(false);
-    }
+    await onSubmit(formData);  // Ensure onSubmit handles the POST request
+    onClose();
   };
 
-  const exit = () => {
-    setFormData({ id: 0, name: "", status: "AVAILABLE", quantity: 0 }); // reset form when exiting
-    onClose(); // Close the popup menu
-  };
+  if (!deviceData) return null;
 
   return (
-    <>
-      <Popup ref={ref} open={deviceToEdit !== null} modal nested>
-        <Box
-          className="modal"
-          component="form"
-          sx={{ display: "flex", flexWrap: "wrap" }}
-          noValidate
-          autoComplete="off"
+    <Popup open={open} modal nested onClose={onClose}>
+      <Box
+        className="modal"
+        component="form"
+        sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
+        noValidate
+        autoComplete="off"
+      >
+        <div className="header">Update Device</div>
+        <TextField
+          fullWidth
+          name="name"
+          label="Device Name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <TextField
+          fullWidth
+          name="quantity"
+          label="Quantity"
+          value={formData.quantity}
+          onChange={handleChange}
+          type="number"
+          sx={{
+            "& input[type=number]": {
+              MozAppearance: "textfield", // Remove spin buttons in Firefox
+            },
+            "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+            {
+              WebkitAppearance: "none", // Remove spin buttons in Chrome, Edge, and Safari
+              margin: 0,
+            },
+          }}
+        />
+        <TextField
+          fullWidth
+          name="status"
+          select
+          label="Status"
+          value={formData.status}
+          onChange={handleChange}
         >
-          <div className="header">Edit Device</div>
-          <div className="content">
-            <TextField
-              fullWidth
-              className="Name"
-              required
-              id="name"
-              label="Device Name"
-              value={formData.name}
-              onChange={handleInputChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              className="Quantity"
-              required
-              id="quantity"
-              label="Quantity"
-              type="number"
-              value={formData.quantity}
-              onChange={handleInputChange}
-              variant="outlined"
-              margin="normal"
-            />
-          </div>
-          <div className="actions">
-            <button
-              className="savebutton"
-              onClick={handleSave}
-              disabled={loading} // disable save button while loading
-            >
-              {loading ? "Saving..." : "SAVE"}
-            </button>
-            <button className="exitbutton" onClick={exit}>
-              Exit
-            </button>
-          </div>
+          {statuses.map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </TextField>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <Button onClick={handleSave} variant="contained" color="primary">
+            Save
+          </Button>
+          <Button onClick={onClose} variant="outlined" color="secondary">
+            Exit
+          </Button>
         </Box>
-      </Popup>
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        message={snackbarMessage}
-      />
-    </>
+      </Box>
+    </Popup>
   );
-}
-export default UpdateDevicesMenu;
+};
+
+export default UpdateDeviceForm;
+
