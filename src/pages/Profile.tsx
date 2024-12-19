@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import {
-    Avatar,
-    Box,
-    Container,
-    Paper,
-    TextField,
-    Typography,
-    Button,
-    Grid,
+  Avatar,
+  Box,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+  Button,
+  Grid,
 } from "@mui/material";
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -42,7 +42,6 @@ const Profile = () => {
     <div className="dashboard">
       <Sidebar />
       <div className="homeContainer">
-        <Navbar />
         <Container maxWidth="sm">
           <Paper elevation={10} sx={{ p: 4, mt: 4 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>

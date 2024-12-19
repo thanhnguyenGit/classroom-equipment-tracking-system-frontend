@@ -19,7 +19,7 @@ export interface Ticket {
 	returnDeadline: string,
 	status: 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'CANCELED',
 	items: Array<Items>,
-	actions?: ReactNode
+	action: null,
 }
 export interface Items {
 	id: number,
@@ -50,6 +50,10 @@ export interface UpdateDevice {
 	name: string,
 	status: DeviceStatus,
 	quantity: number,
+}
+export interface UpdateTicket {
+	orderId: number,
+	newDeadline: string,
 }
 type DeviceStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
 export interface RoomListId {

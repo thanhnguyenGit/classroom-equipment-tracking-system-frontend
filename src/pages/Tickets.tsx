@@ -8,7 +8,6 @@ const Tickets = () => {
     <div className="tickets">
       <Sidebar />
       <div className="homeContainer">
-        <Navbar />
         <TableSortAndSelection />
       </div>
     </div>

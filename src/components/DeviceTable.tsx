@@ -21,7 +21,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import UpdateDevicesMenu from './UpdateDeviceMenu';
 
 function labelDisplayedRows({
@@ -260,6 +260,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 export default function TableSortAndSelection() {
   const [device, setDevices] = useState<Device[]>([]);
   const [deviceToEdit, setDeviceToEdit] = useState<UpdateDevice | null>(null);
+  const [filteredDevice, setFilterDevice] = useState<Device[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -281,6 +283,7 @@ export default function TableSortAndSelection() {
         status: item.status,
       }));
       setDevices(mapped_response);
+      setFilterDevice(mapped_response);
     } catch (error) {
       console.error("Error fetching ticket data:", error);
     }
@@ -307,6 +310,7 @@ export default function TableSortAndSelection() {
       // Send a POST request to delete the item
       await axios.post(`/api/equipment/delete/${id}`);
       setDevices(device.filter((item) => item.id !== id)); // Remove item from the state
+      setFilterDevice(filteredDevice.filter((item) => item.id !== id));
       console.log(`Device with ID ${id} deleted successfully.`);
     } catch (error) {
       console.error("Error deleting device:", error);
@@ -314,7 +318,22 @@ export default function TableSortAndSelection() {
     }
   };
 
-  const rows = device;
+  const rows = filteredDevice;
+
+  // Search handler
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    const filtered = device.filter((item) =>
+      item.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setFilterDevice(filtered);
+  };
+
+  const handleClose = () => {
+    fetchData();
+    setDialogOpen(false);
+  };
   const handleUpdate = async (updatedDevice) => {
     try {
       const response = await axios.post("/api/equipment/update", updatedDevice);
@@ -325,6 +344,7 @@ export default function TableSortAndSelection() {
         alert("Failed to update device.");
       }
       setDevices(device.map((item) => (item.id === updatedDevice.id ? response.data : item)));
+      setFilterDevice(filteredDevice.map((item) => (item.id === updatedDevice.id ? response.data : item)));
       setUpdateDialogOpen(false);
     } catch (error) {
       console.error("Error updating device:", error);
@@ -392,6 +412,14 @@ export default function TableSortAndSelection() {
       }
     >
       <EnhancedTableToolbar numSelected={selected.length} />
+      <TextField
+        label="Search by name"
+        variant="outlined"
+        value={searchTerm}
+        onChange={handleSearch}
+        fullWidth
+        margin="normal"
+      />
       <Table
         aria-labelledby="tableTitle"
         hoverRow
@@ -487,7 +515,9 @@ export default function TableSortAndSelection() {
                       }}
                     >
                       Delete
-                    </Button></td>
+                    </Button>
+
+                  </td>
                 </tr>
               );
             })}

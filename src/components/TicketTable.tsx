@@ -21,22 +21,10 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
+import { Button, TextField } from '@mui/material';
 import axios from 'axios';
 
-// const rows = [
-//   createTicket(1, '20207633', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(2, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(3, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(4, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(5, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(6, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(7, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(8, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(9, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-//   createTicket(10, '20207632', 'Nguyen Viet Thanh', 'Student', '15:30', '17:30', '00:00', 'Microphone', 'Borrowed'),
-// ];
-//
-//
+
 function labelDisplayedRows({
   from,
   to,
@@ -130,10 +118,10 @@ const headCells: readonly HeadCell[] = [
     label: 'Thiet bi',
   },
   {
-    id: 'actions',
+    id: 'action',
     numeric: true,
     disablePadding: false,
-    label: '',
+    label: 'actions',
   },
 
 
@@ -274,44 +262,103 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export default function TableSortAndSelection() {
   const [ticket, setTicket] = useState<Ticket[]>([]);
+  const [filteredTicket, setFilterTicket] = useState<Ticket[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/api/order/list", {
+        params: {
+          sort: "ASC",
+          sortBy: "BORROW_TIME"
+        }
+      });
+      const mapped_response = response.data.map((item: any) => ({
+        id: item.id,
+        borrowerName: item.borrowerName,
+        staffName: item.staffName,
+        borrowTime: item.borrowTime,
+        returnDeadline: item.returnDeadline,
+        items: item.items.map((equipment: any) => ({
+          equipmentName: equipment.equipmentName,
+          quantity: equipment.quantity
+        })),
+        returnTime: item.returnTime,
+        status: item.status,
+        actions: (<IconButton onClick={() => handleActionClick(item.id)}>
+          <MoreVertRounded />
+        </IconButton>)
+      }));
+      setTicket(mapped_response);
+    } catch (error) {
+      console.error("Error fetching ticket data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/order/list", {
-          params: {
-            sort: "ASC",
-            sortBy: "BORROW_TIME"
-          }
-        });
-        const mapped_response = response.data.map((item: any) => ({
-          id: item.id,
-          borrowerName: item.borrowerName,
-          staffName: item.staffName,
-          borrowTime: item.borrowTime,
-          returnDeadline: item.returnDeadline,
-          items: item.items.map((equipment: any) => ({
-            equipmentName: equipment.equipmentName,
-            quantity: equipment.quantity
-          })),
-          returnTime: item.returnTime,
-          status: item.status,
-          actions: (<IconButton onClick={() => handleActionClick(item.id)}>
-            <MoreVertRounded />
-          </IconButton>)
-        }));
-        setTicket(mapped_response);
-      } catch (error) {
-        console.error("Error fetching ticket data:", error);
-      }
-    };
 
     fetchData();
+    // Set up periodic refresh
+    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+
   }, []);
-  const rows = ticket;
+  const rows = filteredTicket;
+
+  const handleDelete = async (id: number) => {
+    console.log("Deleting item with ID:", id); // Check if this is logged when clicking Delete button
+    if (!window.confirm("Are you sure you want to delete this device?")) {
+      return;
+    }
+
+    try {
+      // Send a POST request to delete the item
+      await axios.post(`/api/order/cancel/${id}`);
+      setTicket(ticket.filter((item) => item.id !== id)); // Remove item from the state
+      setFilterTicket(filteredTicket.filter((item) => item.id !== id));
+      console.log(`Device with ID ${id} deleted successfully.`);
+    } catch (error) {
+      console.error("Error deleting device:", error);
+      alert("An error occurred while deleting the device. Please try again.");
+    }
+  };
+
+  // Search handler
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    const filtered = ticket.filter((item) =>
+      item.borrowerName.toLowerCase().includes(term.toLowerCase())
+    );
+    setFilterTicket(filtered);
+  };
+
+  const handleUpdate = async (updatedTicket) => {
+    try {
+      const response = await axios.post("/api/order/extend-deadline", updatedTicket);
+      if (response.status === 200) {
+        alert("Device updated successfully.");
+        fetchData();  // Refetch the devices list after update
+      } else {
+        alert("Failed to update device.");
+      }
+      setTicket(ticket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
+      setFilterTicket(filteredTicket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
+      setUpdateDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating device:", error);
+    }
+  };
+  // Open update form
+  const openUpdateForm = (ticket) => {
+    setSelectedTicket(ticket);
+    setUpdateDialogOpen(true);
+  };
+
   // format items for display
   const formatItems = (items: Items[]) => {
     return items.map(item =>
@@ -390,6 +437,14 @@ export default function TableSortAndSelection() {
       }
     >
       <EnhancedTableToolbar numSelected={selected.length} />
+      <TextField
+        label="Search by name"
+        variant="outlined"
+        value={searchTerm}
+        onChange={handleSearch}
+        fullWidth
+        margin="normal"
+      />
       <Table
         aria-labelledby="tableTitle"
         hoverRow
@@ -461,7 +516,32 @@ export default function TableSortAndSelection() {
                   <td>{formatTime(row.returnDeadline)}</td>
                   <td>{row.status}</td>
                   <td>{formatItems(row.items)}</td>
-                  <td>{row.actions}</td>
+                  <td>{row.action}</td>
+                  <td><Button
+                    variant="contained"
+                    color="error"
+                    onClick={(e) => {
+                      setDialogOpen(true)
+                      openUpdateForm(row);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                    <UpdateDevicesMenu
+                      open={updateDialogOpen}
+                      onClose={() => setUpdateDialogOpen(false)}
+                      onSubmit={handleUpdate}
+                      deviceData={selectedDevice} />
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(row.id);
+                      }}
+                    >
+                      Delete
+                    </Button></td>
                 </tr>
               );
             })}

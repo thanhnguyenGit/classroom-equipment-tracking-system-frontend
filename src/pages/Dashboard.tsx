@@ -20,7 +20,6 @@ const Dashboard = () => {
     <div className="dashboard">
       <Sidebar />
       <div className="homeContainer">
-        <Navbar />
         <div className="widgets">
           <Widget type="tickets" />
           <Widget type="devices" />

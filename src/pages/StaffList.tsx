@@ -109,7 +109,6 @@ const User = () => {
     <div className="dashboard">
       <Sidebar />
       <div className="homeContainer">
-        <Navbar />
         <div className="widgets"></div>
         <div className="listContainer">
           <Button variant="contained" onClick={() => setDialogOpen(true)}>
