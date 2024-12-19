@@ -339,7 +339,7 @@ export default function TableSortAndSelection() {
     setFilterTicket(filtered);
   };
 
-  const handleUpdate = async (updatedTicket: Ticket) => {
+  const handleUpdate = async (updatedTicket) => {
     try {
       const response = await axios.post("/api/order/extend-deadline", updatedTicket);
       if (response.status === 200) {

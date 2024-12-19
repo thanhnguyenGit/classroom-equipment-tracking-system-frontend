@@ -23,20 +23,28 @@ function NewDevicesMenu() {
     const fetchRooms = async () => {
       try {
         const response = await axios.get("/api/equipment/list");
-        const mappedRooms = response.data.map((item: any) => ({
-          id: item.room?.roomName ?? "Unknown",
-          name: `${item.room?.building?.buildingName ?? "Unknown"} - ${item.room?.roomName ?? "Unknown"}`,
-        }));
-        setRooms(mappedRooms);
+
+        // Map rooms and remove duplicates based on room ID
+        const uniqueRooms = Array.from(
+          new Map(
+            response.data.map((item: any) => [
+              item.room?.id, // Use room ID as the unique key
+              {
+                id: item.room?.id ?? 0,
+                name: `${item.room?.building?.buildingName ?? "Unknown"} - ${item.room?.roomName ?? "Unknown"}`,
+              },
+            ])
+          ).values()
+        );
+
+        setRooms(uniqueRooms);
       } catch (error) {
         console.error("Error fetching room data:", error);
       }
     };
 
     fetchRooms();
-  }, []);
-
-  // Handle input change and update state
+  }, []);  // Handle input change and update state
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData({
