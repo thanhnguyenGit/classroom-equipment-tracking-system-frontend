@@ -4,15 +4,14 @@ import PersonOutlineOutlined from "@mui/icons-material/PersonOutlineOutlined";
 import DeviceHub from "@mui/icons-material/DeviceHub";
 import { Link } from "react-router-dom";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import { useAuth } from "../context/useAuth";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 const Sidebar = () => {
   const { logout } = useAuth();
   const handleLogout = () => {
     logout();
-    // Add logout functionality here
     console.log("User logged out");
-    // Example: localStorage.clear();
-    // Redirect the user to the login page if needed
   };
   return (
     <div className="sidebar">
@@ -36,14 +35,24 @@ const Sidebar = () => {
           </Link>
           <Link to="/tickets" style={{ textDecoration: "none" }}>
             <li>
-              <DeviceHub className="icon" />
+              <AssignmentIcon className="icon" />
               <span>Ticket</span>
             </li>
           </Link>
-          <Link to="/user" style={{ textDecoration: "none" }}>
+          {JSON.parse(localStorage.getItem("user")).admin ? (
+            <Link to="/staff" style={{ textDecoration: "none" }}>
+              <li>
+                < GroupOutlinedIcon className="icon" />
+                <span>Staff</span>
+              </li>
+            </Link>
+          ) : (
+            ""
+          )}
+          <Link to="/profile" style={{ textDecoration: "none" }}>
             <li>
-              <PersonOutlineOutlined className="icon" />
-              <span>User</span>
+              < PersonOutlineOutlined className="icon" />
+              <span>Profile</span>
             </li>
           </Link>
           <li onClick={handleLogout} style={{ cursor: "pointer" }}>

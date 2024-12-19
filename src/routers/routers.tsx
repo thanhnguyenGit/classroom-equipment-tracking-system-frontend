@@ -8,20 +8,9 @@ import App from "../App.tsx";
 import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { ChangePassword } from "../pages/ChangePassword.tsx";
 import { Register } from "../pages/Register.tsx";
-import User from "../pages/User.tsx";
-import { FirstLogin } from "../pages/FirstLogin.tsx";
-// const AppRouters = () => {
-//   return (
-//     <Routes>
-//       <Route></Route>
-//       <Route path="/tickets" element={<Dashboard />} />
-//       <Route path="/devices" element={<Devices />} />
-//       <Route path="/login" element={<Login />} />
-//     </Routes>
-//   )
-// };
-
-// export default AppRouters;
+import User from "../pages/StaffList.tsx";
+import StaffList from "../pages/StaffList.tsx";
+import Profile from "../pages/Profile.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -44,9 +33,9 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          // <ProtectedRouters>
-          <Dashboard />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Dashboard />
+          </ProtectedRouters>
         ),
       },
       {
@@ -55,27 +44,41 @@ export const router = createBrowserRouter([
           <ProtectedRouters>
             <ChangePassword />
           </ProtectedRouters>
+
         ),
       },
       {
         path: "devices",
         element: (
-          // <ProtectedRouters>
-          <Devices />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Devices />
+          </ProtectedRouters>
+
         ),
       },
       {
         path: "tickets",
         element: (
-          // <ProtectedRouters>
-          <Tickets />
-          // </ProtectedRouters>
+          <ProtectedRouters>
+            <Tickets />
+          </ProtectedRouters>
         ),
       },
       {
-        path: "user",
-        element: <User />,
+        path: "staff",
+        element: (
+          <ProtectedRouters>
+            <StaffList />
+          </ProtectedRouters>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRouters>
+            <Profile />
+          </ProtectedRouters>
+        ),
       },
     ],
   },

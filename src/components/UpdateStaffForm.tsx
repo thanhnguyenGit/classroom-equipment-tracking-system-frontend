@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
-import { Staff } from "../pages/User";
+import { Staff } from "../pages/StaffList";
 
 interface UpdateStaffFormProps {
   open: boolean;

@@ -88,7 +88,6 @@ const RegisterForm = ({ open, onClose, onSubmit }) => {
           onChange={(e) => {
             const value = e.target.value;
             if (/^\d*$/.test(value)) {
-              // Chỉ chấp nhận chữ số
               handleChange(e);
             }
           }}
@@ -105,7 +104,6 @@ const RegisterForm = ({ open, onClose, onSubmit }) => {
           onChange={(e) => {
             const value = e.target.value;
             if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-              // Kiểm tra email hợp lệ
             }
             handleChange(e);
           }}
