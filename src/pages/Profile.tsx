@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
 import {
   Avatar,
   Box,
@@ -9,8 +8,9 @@ import {
   TextField,
   Typography,
   Button,
-  Grid,
-} from "@mui/material";
+} from "@mui/material"
+import ChangePasswordForm from "../components/ChangePasswordForm";
+
 const Profile = () => {
   const [profileData, setProfileData] = useState({
     name: "",
@@ -20,13 +20,15 @@ const Profile = () => {
     buildingName: "",
   });
 
+  const [popupOpen, setPopupOpen] = useState<boolean>(false);
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       const parsedUser = JSON.parse(userData);
 
       const role = parsedUser.admin ? "Admin" : "Staff";
-      const buildingName = parsedUser.buildingId?.buildingName || "N/A";
+      const buildingName = parsedUser.buildingId.buildingName;
 
       setProfileData({
         name: parsedUser.name,
@@ -100,12 +102,13 @@ const Profile = () => {
               InputProps={{ readOnly: true }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={() => setPopupOpen(true)}>
                 Change Password
               </Button>
             </Box>
           </Paper>
         </Container>
+        <ChangePasswordForm open={popupOpen} onClose={() => setPopupOpen(false)} />
       </div>
     </div>
   );

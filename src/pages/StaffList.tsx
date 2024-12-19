@@ -12,7 +12,6 @@ import {
   TextField,
 } from "@mui/material";
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
 import RegisterForm from "../components/RegisterForm";
 import UpdateStaffForm from "../components/UpdateStaffForm";
 
@@ -129,55 +128,83 @@ const User = () => {
             margin="normal"
           />
           <div className="listTitle"></div>
-          {JSON.parse(localStorage.getItem("user")).admin ? (
-            <TableContainer component={Paper} className="table">
-              <Table sx={{ minWidth: 650 }} aria-label="staff table">
-                {/* Table Head */}
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Staff ID</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Phone</TableCell>
-                    <TableCell>Building</TableCell>
-                    <TableCell>Actions</TableCell>
+          <TableContainer component={Paper} className="table">
+            <Table sx={{ minWidth: 650 }} aria-label="staff table">
+              {/* Table Head */}
+              <TableHead>
+                <TableRow>
+                  <TableCell>Staff ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Building</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              {/* Table Body */}
+              <TableBody>
+                {filteredStaff.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.phone}</TableCell>
+                    <TableCell>
+                      {item.buildingId?.buildingName}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => openUpdateForm(item)}
+                      >
+                        Update
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
 
-                {/* Table Body */}
-                <TableBody>
-                  {filteredStaff.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.id}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{item.phone}</TableCell>
-                      <TableCell>
-                        {item.buildingId?.buildingName || 'No building assigned'}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => openUpdateForm(item)}
-                        >
-                          Update
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+              {/* Table Body */}
+              <TableBody>
+                {filteredStaff.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.phone}</TableCell>
+                    <TableCell>
+                      {item.buildingId?.buildingName || 'No building assigned'}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => openUpdateForm(item)}
+                      >
+                        Update
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           ) : (
-            <div>Day la code profile</div>
+          <div>Day la code profile</div>
           )}
         </div>
         <UpdateStaffForm
