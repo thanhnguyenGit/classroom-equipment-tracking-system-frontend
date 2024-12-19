@@ -1,4 +1,3 @@
-import { tickets } from '../data/mockData';
 import React, { useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,8 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import "../styles/Table.scss"
 import axios from 'axios';
-import IconButton from './IconButton';
-import { MoreVertRounded } from '@mui/icons-material';
 import { Ticket, Items } from '../data/mockData';
 const TicketsTable = () => {
   // format time
@@ -65,7 +62,7 @@ const TicketsTable = () => {
   useEffect(() => {
     fetchData();
     // Set up periodic refresh
-    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchData, 5000); // Refresh every 30 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -73,7 +70,7 @@ const TicketsTable = () => {
 
   const rows = ticket;
   return (
-    <TableContainer component={Paper} className='table'>
+    <TableContainer component={Paper} className='table' sx={{ borderradius: '20px', overflow: 'hidden' }}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>

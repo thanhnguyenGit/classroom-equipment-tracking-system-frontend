@@ -341,21 +341,33 @@ export default function TableSortAndSelection() {
 
   const handleUpdate = async (updatedTicket) => {
     try {
-      const response = await axios.post("/api/order/extend-deadline", updatedTicket);
+      // Construct the payload to include the orderId (ticket id) and new deadline
+      const payload = {
+        orderId: updatedTicket.id, // Include the orderId
+        newDeadline: updatedTicket.newDeadline, // Ensure this is coming from the update form
+      };
+
+      // Send the payload to the API
+      const response = await axios.post("/api/order/extend-deadline", payload);
+
       if (response.status === 200) {
         alert("Device updated successfully.");
-        fetchData();  // Refetch the devices list after update
+        fetchData(); // Refetch the tickets list after update
       } else {
-        alert("Failed to update device.");
+        alert("Failed to update the device.");
       }
-      setTicket(ticket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
-      // setFilterTicket(filteredTicket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
+
+      // Update the ticket in the state
+      setTicket(
+        ticket.map((item) =>
+          item.id === updatedTicket.id ? response.data : item
+        )
+      );
       setUpdateDialogOpen(false);
     } catch (error) {
       console.error("Error updating device:", error);
     }
-  };
-  // Open update form
+  };  // Open update form
   const openUpdateForm = (ticket) => {
     setSelectedTicket(ticket);
     setUpdateDialogOpen(true);
