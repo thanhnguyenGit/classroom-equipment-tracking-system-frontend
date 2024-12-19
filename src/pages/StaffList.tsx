@@ -154,7 +154,7 @@ const User = () => {
                     <TableCell>{item.email}</TableCell>
                     <TableCell>{item.phone}</TableCell>
                     <TableCell>
-                      {item.buildingId?.buildingName || 'No building assigned'}
+                      {item.buildingId?.buildingName}
                     </TableCell> 
                     <TableCell>
                       <Button

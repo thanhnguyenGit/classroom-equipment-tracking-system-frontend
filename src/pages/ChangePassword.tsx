@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/useAuth";
 
+
 export const ChangePassword = () => {
   const [formData, setFormData] = useState({
     staffId: 0,
@@ -95,6 +96,7 @@ export const ChangePassword = () => {
             value={formData.oldPassword}
             onChange={handleChange}
             placeholder="Enter old password"
+            type = "password"
             fullWidth
             required
             autoFocus

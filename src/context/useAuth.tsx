@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { users } from "../data/mockData";
 import axios from "axios";
+import { Alert } from "@mui/material";
 
 export type LoginParams = {
   username: string;
@@ -20,6 +20,7 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 export const UserProvider = ({ children }: Props) => {
   const [isReady, setIsReady] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -44,6 +45,11 @@ export const UserProvider = ({ children }: Props) => {
       }
     } catch (err) {
       console.error("Login failed:", err);
+
+      setAlertOpen(true);
+      setTimeout(() => {
+        setAlertOpen(false);
+      }, 1000);
     }
   };
 
@@ -59,9 +65,12 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   return (
-    <UserContext.Provider value={{ isLogin, login, logout, token }}>
-      {isReady ? children : null}
-    </UserContext.Provider>
+    <>
+      {alertOpen ? <Alert severity="error">Sai mk</Alert> : ""}
+      <UserContext.Provider value={{ isLogin, login, logout, token }}>
+        {isReady ? children : null}
+      </UserContext.Provider>
+    </>
   );
 };
 

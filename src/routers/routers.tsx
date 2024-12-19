@@ -7,8 +7,6 @@ import { UserProvider } from "../context/useAuth.tsx";
 import App from "../App.tsx";
 import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { ChangePassword } from "../pages/ChangePassword.tsx";
-import { Register } from "../pages/Register.tsx";
-import User from "../pages/StaffList.tsx";
 import StaffList from "../pages/StaffList.tsx";
 import Profile from "../pages/Profile.tsx";
 
