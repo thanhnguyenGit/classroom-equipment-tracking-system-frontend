@@ -3,8 +3,16 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonOutlineOutlined from "@mui/icons-material/PersonOutlineOutlined";
 import DeviceHub from "@mui/icons-material/DeviceHub";
 import { Link } from "react-router-dom";
-
+import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import { useAuth } from "../context/useAuth";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 const Sidebar = () => {
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    console.log("User logged out");
+  };
   return (
     <div className="sidebar">
       <div className="top">
@@ -27,21 +35,31 @@ const Sidebar = () => {
           </Link>
           <Link to="/tickets" style={{ textDecoration: "none" }}>
             <li>
-              <DeviceHub className="icon" />
+              <AssignmentIcon className="icon" />
               <span>Ticket</span>
             </li>
           </Link>
-          <Link to="/user" style={{ textDecoration: "none" }}>
+          {JSON.parse(localStorage.getItem("user")).admin ? (
+            <Link to="/staff" style={{ textDecoration: "none" }}>
+              <li>
+                < GroupOutlinedIcon className="icon" />
+                <span>Staff</span>
+              </li>
+            </Link>
+          ) : (
+            ""
+          )}
+          <Link to="/profile" style={{ textDecoration: "none" }}>
             <li>
-              <PersonOutlineOutlined className="icon" />
-              <span>User</span>
+              < PersonOutlineOutlined className="icon" />
+              <span>Profile</span>
             </li>
           </Link>
+          <li onClick={handleLogout} style={{ cursor: "pointer" }}>
+            <LogoutOutlined className="icon" />
+            <span>Logout</span>
+          </li>
         </ul>
-      </div>
-      <div className="bottom">
-        <div className="colorOption"></div>
-        <div className="colorOption"></div>
       </div>
     </div>
   );

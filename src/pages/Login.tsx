@@ -1,36 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginParams, useAuth } from "../context/useAuth";
-import { AppProvider } from "@toolpad/core/AppProvider";
-import { SignInPage, type AuthProvider } from "@toolpad/core/SignInPage";
 import {
   Avatar,
   Box,
   Container,
-  FormControlLabel,
   Paper,
   TextField,
   Typography,
-  Checkbox,
   Button,
-  Grid,
-  Link,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import axios from "axios";
+import { LoginParams, useAuth } from "../context/useAuth";
+
 export const Login = () => {
-  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const naviagte = useNavigate();
-  const handleSubmit = () => {
-    // login({ username: username, password: password });
-    axios.post("/api/staff/login", {
+  const [error, setError] = useState(""); // State to store error messages
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent form from reloading the page
+    login({
       username,
       password,
-    });
+    } as LoginParams);
+    navigate("/dashboard");
   };
-  useEffect(() => { }, []);
   return (
     <Container maxWidth="xs">
       <Paper elevation={10} sx={{ marginTop: 8, padding: 2 }}>
@@ -66,11 +62,13 @@ export const Login = () => {
             sx={{ mb: 2 }}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
             Sign In
-          </Button>
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
-            Change Password
           </Button>
         </Box>
       </Paper>

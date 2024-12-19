@@ -8,6 +8,7 @@ export interface Device {
 	buildingName: string,
 	status: 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
 	quantity: number,
+	action: null,
 }
 
 export interface Ticket {
@@ -18,7 +19,7 @@ export interface Ticket {
 	returnDeadline: string,
 	status: 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'CANCELED',
 	items: Array<Items>,
-	actions?: ReactNode
+	action: null,
 }
 export interface Items {
 	id: number,
@@ -43,6 +44,20 @@ export interface NewDevice {
 	name: string,
 	roomId: number,
 	quantity: number,
+}
+export interface UpdateDevice {
+	id: number,
+	name: string,
+	status: DeviceStatus,
+	quantity: number,
+}
+export interface UpdateTicket {
+	orderId: number,
+	newDeadline: string,
+}
+type DeviceStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
+export interface RoomListId {
+	roomId: number,
 }
 export function createDevice(
 	id: number,
@@ -133,4 +148,4 @@ export const tickets: Ticket[] = [
 	{ id: 4, borrower_id: '20207632', name: 'Nguyen Viet Thanh', tag: 'Student', borrow_time: '15:30', expected_return_in: '17h30', return_time: '00:00', device: 'Microphone', status: 'Overdue' },
 
 ];
-
+export const Staff: User[] = [];

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/DevicesTable.scss";
-import { devicesRow, devicesCol, Device, createDevice } from '../data/mockData';
+import { devicesRow, devicesCol, Device, createDevice, UpdateDevice } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -21,22 +21,9 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
+import { Button, TextField } from '@mui/material';
+import UpdateDevicesMenu from './UpdateDeviceMenu';
 
-// const rows = [
-//   createDevice(1, 'Microphone', 'D9-302', 'Active', 20),
-//   createDevice(2, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(3, 'Microphone', 'D7-202', 'Active', 20),
-//   createDevice(4, 'Microphone', 'C3-202', 'Active', 20),
-//   createDevice(5, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(6, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(7, 'Microphone', 'D8-202', 'Active', 20),
-//   createDevice(8, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(9, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(10, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(11, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(12, 'Microphone', 'D9-202', 'Active', 20),
-//   createDevice(13, 'Microphone', 'D9-202', 'Active', 20),
-// ];
 function labelDisplayedRows({
   from,
   to,
@@ -130,10 +117,10 @@ const headCells: readonly HeadCell[] = [
     label: 'Quantity',
   },
   {
-    id: 'quantity',
+    id: 'action',
     numeric: true,
     disablePadding: false,
-    label: 'Quantity',
+    label: 'Action',
   },
 ];
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -271,36 +258,103 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function TableSortAndSelection() {
-  const [device, setDevice] = useState<Device[]>([]);
+  const [device, setDevices] = useState<Device[]>([]);
+  const [deviceToEdit, setDeviceToEdit] = useState<UpdateDevice | null>(null);
+  const [filteredDevice, setFilterDevice] = useState<Device[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Device>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/api/equipment/list");
+      const mapped_response = response.data.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        roomName: item.room?.roomName ?? "Unknown",
+        buildingName: item.room?.building?.buildingName ?? "Unknown",
+        quantity: item.quantity,
+        status: item.status,
+      }));
+      setDevices(mapped_response);
+      setFilterDevice(mapped_response);
+    } catch (error) {
+      console.error("Error fetching ticket data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/equipment/list");
-        const mapped_response = response.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          roomName: item.room?.roomName ?? "Unknown",
-          buildingName: item.room?.building?.buildingName ?? "Unknown",
-          quantity: item.quantity,
-          status: item.status,
-        }));
-        setDevice(mapped_response);
-      } catch (error) {
-        console.error("Error fetching ticket data:", error);
-      }
-    };
 
     fetchData();
+    // Set up periodic refresh
+    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
-  const rows = device;
 
+  const handleDelete = async (id: number) => {
+    console.log("Deleting item with ID:", id); // Check if this is logged when clicking Delete button
+    if (!window.confirm("Are you sure you want to delete this device?")) {
+      return;
+    }
+
+    try {
+      // Send a POST request to delete the item
+      await axios.post(`/api/equipment/delete/${id}`);
+      setDevices(device.filter((item) => item.id !== id)); // Remove item from the state
+      setFilterDevice(filteredDevice.filter((item) => item.id !== id));
+      console.log(`Device with ID ${id} deleted successfully.`);
+    } catch (error) {
+      console.error("Error deleting device:", error);
+      alert("An error occurred while deleting the device. Please try again.");
+    }
+  };
+
+  const rows = filteredDevice;
+
+  // Search handler
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    const filtered = device.filter((item) =>
+      item.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setFilterDevice(filtered);
+  };
+
+  const handleClose = () => {
+    fetchData();
+    setDialogOpen(false);
+  };
+  const handleUpdate = async (updatedDevice) => {
+    try {
+      const response = await axios.post("/api/equipment/update", updatedDevice);
+      if (response.status === 200) {
+        alert("Device updated successfully.");
+        fetchData();  // Refetch the devices list after update
+      } else {
+        alert("Failed to update device.");
+      }
+      setDevices(device.map((item) => (item.id === updatedDevice.id ? response.data : item)));
+      setFilterDevice(filteredDevice.map((item) => (item.id === updatedDevice.id ? response.data : item)));
+      setUpdateDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating device:", error);
+    }
+  };
+  // Open update form
+  const openUpdateForm = (device) => {
+    setSelectedDevice(device);
+    setUpdateDialogOpen(true);
+  };
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Device,
@@ -358,6 +412,14 @@ export default function TableSortAndSelection() {
       }
     >
       <EnhancedTableToolbar numSelected={selected.length} />
+      <TextField
+        label="Search by name"
+        variant="outlined"
+        value={searchTerm}
+        onChange={handleSearch}
+        fullWidth
+        margin="normal"
+      />
       <Table
         aria-labelledby="tableTitle"
         hoverRow
@@ -428,6 +490,34 @@ export default function TableSortAndSelection() {
                   <td>{row.buildingName}</td>
                   <td>{row.status}</td>
                   <td>{row.quantity}</td>
+                  <td>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        setDialogOpen(true)
+                        openUpdateForm(row);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <UpdateDevicesMenu
+                      open={updateDialogOpen}
+                      onClose={() => setUpdateDialogOpen(false)}
+                      onSubmit={handleUpdate}
+                      deviceData={selectedDevice} />
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(row.id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+
+                  </td>
                 </tr>
               );
             })}
@@ -446,7 +536,7 @@ export default function TableSortAndSelection() {
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={7}>
+            <td colSpan={8}>
               <Box
                 sx={{
                   display: 'flex',
@@ -504,4 +594,3 @@ export default function TableSortAndSelection() {
     </Sheet >
   );
 }
-

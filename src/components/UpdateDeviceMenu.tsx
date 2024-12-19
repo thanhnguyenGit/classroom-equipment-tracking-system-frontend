@@ -1,45 +1,40 @@
+
 import { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
-import { Staff } from "../pages/StaffList";
+import { UpdateDevice } from "../data/mockData";
 
-interface UpdateStaffFormProps {
+interface UpdateDeviceFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: Staff) => void;
-  staffData: Staff | undefined;
+  onSubmit: (data: UpdateDevice) => void;
+  deviceData: UpdateDevice;
 }
 
-const UpdateStaffForm = ({
+const UpdateDeviceForm = ({
   open,
   onClose,
   onSubmit,
-  staffData,
-}: UpdateStaffFormProps) => {
-  const building = [
-    { value: "D7", label: "D7" },
-    { value: "D9", label: "D9" },
-    { value: "D3", label: "D3" },
-    { value: "D5", label: "D5" },
-    { value: "D3-5", label: "D3-5" },
-    { value: "D6", label: "D6" },
-    { value: "D8", label: "D8" },
-    { value: "C1", label: "C1" },
-    { value: "C2", label: "C2" },
-    { value: "B1", label: "B1" },
-    { value: "C4", label: "C4" },
-    { value: "C7", label: "C7" },
+  deviceData,
+}: UpdateDeviceFormProps) => {
+  const statuses = [
+    "AVAILABLE",
+    "UNAVAILABLE",
+    "BORROWED",
+    "DAMAGED",
+    "NORMAL",
+    "LOST",
   ];
 
-  const [formData, setFormData] = useState<Staff>(
-    staffData || { id: "", name: "", email: "", phone: "", buildingName: "" }
+  const [formData, setFormData] = useState<UpdateDevice>(
+    deviceData || { id: 0, name: "", status: "AVAILABLE", quantity: 0 }
   );
 
   useEffect(() => {
-    if (staffData) {
-      setFormData({ ...staffData });
+    if (deviceData) {
+      setFormData({ ...deviceData });
     }
-  }, [staffData]);
+  }, [deviceData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -48,17 +43,17 @@ const UpdateStaffForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    const { name, phone, buildingName } = formData;
-    if (!name || !phone || !buildingName) {
+  const handleSave = async () => {
+    const { name, status, quantity } = formData;
+    if (!name || !status || quantity <= 0) {
       alert("Please fill all fields.");
       return;
     }
-    onSubmit(formData);
+    await onSubmit(formData);  // Ensure onSubmit handles the POST request
     onClose();
   };
 
-  if (!staffData) return null;
+  if (!deviceData) return null;
 
   return (
     <Popup open={open} modal nested onClose={onClose}>
@@ -69,19 +64,19 @@ const UpdateStaffForm = ({
         noValidate
         autoComplete="off"
       >
-        <div className="header">Update Staff</div>
+        <div className="header">Update Device</div>
         <TextField
           fullWidth
           name="name"
-          label="Name"
+          label="Device Name"
           value={formData.name}
           onChange={handleChange}
         />
         <TextField
           fullWidth
-          name="phone"
-          label="Phone"
-          value={formData.phone}
+          name="quantity"
+          label="Quantity"
+          value={formData.quantity}
           onChange={handleChange}
           type="number"
           sx={{
@@ -89,23 +84,23 @@ const UpdateStaffForm = ({
               MozAppearance: "textfield", // Remove spin buttons in Firefox
             },
             "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-              {
-                WebkitAppearance: "none", // Remove spin buttons in Chrome, Edge, and Safari
-                margin: 0,
-              },
+            {
+              WebkitAppearance: "none", // Remove spin buttons in Chrome, Edge, and Safari
+              margin: 0,
+            },
           }}
         />
         <TextField
           fullWidth
-          name="buildingName"
+          name="status"
           select
-          label="Building Name"
-          value={formData.buildingName}
+          label="Status"
+          value={formData.status}
           onChange={handleChange}
         >
-          {building.map((building) => (
-            <MenuItem key={building.value} value={building.value}>
-              {building.label}
+          {statuses.map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
             </MenuItem>
           ))}
         </TextField>
@@ -122,4 +117,5 @@ const UpdateStaffForm = ({
   );
 };
 
-export default UpdateStaffForm;
+export default UpdateDeviceForm;
+
