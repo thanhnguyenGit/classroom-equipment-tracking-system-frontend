@@ -35,8 +35,8 @@ const UpdateTicketForm = ({
 
   const handleSave = async () => {
     const { orderId, newDeadline } = formData;
-    if (!orderId || !newDeadline) {
-      alert("Please fill all fields.");
+    if (!newDeadline) {
+      alert("Please fill in the new deadline.");
       return;
     }
     await onSubmit(formData); // Ensure onSubmit handles the POST request
@@ -55,15 +55,7 @@ const UpdateTicketForm = ({
         autoComplete="off"
       >
         <div className="header">Update Ticket</div>
-        <TextField
-          fullWidth
-          name="orderId"
-          label="Order ID"
-          value={formData.orderId}
-          onChange={handleChange}
-          type="number"
-          disabled
-        />
+
         <TextField
           fullWidth
           name="newDeadline"

@@ -257,6 +257,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Box>
   );
 }
+export var total_rows = 0;
 export default function TableSortAndSelection() {
   const [device, setDevices] = useState<Device[]>([]);
   const [deviceToEdit, setDeviceToEdit] = useState<UpdateDevice | null>(null);
@@ -284,6 +285,7 @@ export default function TableSortAndSelection() {
       }));
       setDevices(mapped_response);
       setFilterDevice(mapped_response);
+      total_rows = mapped_response.lenght;
     } catch (error) {
       console.error("Error fetching ticket data:", error);
     }
