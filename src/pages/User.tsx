@@ -9,67 +9,38 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import RegisterForm from "../components/RegisterForm";
 import UpdateStaffForm from "../components/UpdateStaffForm";
 
-export type Staff = {
-  id: string | "";
-  name: string;
-  email: string;
-  phone: string;
-  buildingName: string;
-};
-
 const User = () => {
-  const [staff, setStaff] = useState<Staff[]>([]);
-  const [filteredStaff, setFilteredStaff] = useState<Staff[]>([]);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
-  const [selectedStaff, setSelectedStaff] = useState<Staff>();
+  const [staff, setStaff] = useState([]);
+  const [selectedStaff, setSelectedStaff] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
 
   // Fetch staff data on component load
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("/api/staff/list");
-      setStaff(response.data);
-      setFilteredStaff(response.data); // Initialize filteredStaff
-    } catch (error) {
-      console.error("Error fetching staff data:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/staff/list");
+        setStaff(response.data);
+      } catch (error) {
+        console.error("Error fetching staff data:", error);
+      }
+    };
+
     fetchData();
   }, []);
 
-  // Search handler
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    const filtered = staff.filter((item) =>
-      item.name.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredStaff(filtered);
-  };
-
-  const handleClose = () => {
-    fetchData();
-    setDialogOpen(false);
-  };
-
   // Handle updating staff
-  const handleUpdate = async (updatedStaff: Staff) => {
+  const handleUpdate = async (updatedStaff) => {
     try {
       const response = await axios.post("/api/staff/update", updatedStaff);
       setStaff(
-        staff.map((item) =>
-          item.id === updatedStaff.id ? response.data : item
-        )
+        staff.map((item) => (item.id === updatedStaff.id ? response.data : item))
       );
       setUpdateDialogOpen(false);
     } catch (error) {
@@ -78,32 +49,31 @@ const User = () => {
   };
 
   // Handle deleting staff
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this staff member?")) {
       return;
     }
     try {
-      await axios.post(`/api/staff/delete/${id}`);
+      await axios.delete(`/api/staff/delete/${id}`);
+      // Remove the deleted staff from the state
       setStaff(staff.filter((item) => item.id !== id));
-      setFilteredStaff(filteredStaff.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Error deleting staff:", error);
     }
   };
 
   // Handle adding new staff
-  const handleAddStaff = async (newStaff: Staff) => {
+  const handleAddStaff = async (newStaff) => {
     try {
       const response = await axios.post("/api/staff/create", newStaff);
       setStaff([...staff, response.data]);
-      setFilteredStaff([...filteredStaff, response.data]);
     } catch (error) {
       console.error("Error creating new staff:", error);
     }
   };
 
   // Open update form
-  const openUpdateForm = (staff: Staff) => {
+  const openUpdateForm = (staff) => {
     setSelectedStaff(staff);
     setUpdateDialogOpen(true);
   };
@@ -120,68 +90,55 @@ const User = () => {
           </Button>
           <RegisterForm
             open={dialogOpen}
-            onClose={handleClose}
+            onClose={() => setDialogOpen(false)}
             onSubmit={handleAddStaff}
           />
-          {/* Search bar */}
-          <TextField
-            label="Search by name"
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearch}
-            fullWidth
-            margin="normal"
-          />
           <div className="listTitle"></div>
-          {JSON.parse(localStorage.getItem("user")).admin ? (
-            <TableContainer component={Paper} className="table">
-              <Table sx={{ minWidth: 650 }} aria-label="staff table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Staff ID</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Phone</TableCell>
-                    <TableCell>Actions</TableCell>
+          <TableContainer component={Paper} className="table">
+            <Table sx={{ minWidth: 650 }} aria-label="staff table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Staff ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {staff.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.email}</TableCell>
+                    <TableCell>{item.phone}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => openUpdateForm(item)}
+                      >
+                        Update
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredStaff.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.id}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.email}</TableCell>
-                      <TableCell>{item.phone}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => openUpdateForm(item)}
-                        >
-                          Update
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <div>Day la code profile</div>
-          )}
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
         <UpdateStaffForm
           open={updateDialogOpen}
           onClose={() => setUpdateDialogOpen(false)}
           onSubmit={handleUpdate}
-          staffData={selectedStaff!}
+          staffData={selectedStaff}
         />
       </div>
     </div>
