@@ -23,6 +23,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { visuallyHidden } from '@mui/utils';
 import { Button, TextField } from '@mui/material';
 import axios from 'axios';
+import UpdateTicketForm from './UpdateTicketMenu';
 
 
 function labelDisplayedRows({
@@ -292,6 +293,7 @@ export default function TableSortAndSelection() {
         </IconButton>)
       }));
       setTicket(mapped_response);
+      setFilterTicket(mapped_response);
     } catch (error) {
       console.error("Error fetching ticket data:", error);
     }
@@ -337,7 +339,7 @@ export default function TableSortAndSelection() {
     setFilterTicket(filtered);
   };
 
-  const handleUpdate = async (updatedTicket) => {
+  const handleUpdate = async (updatedTicket: Ticket) => {
     try {
       const response = await axios.post("/api/order/extend-deadline", updatedTicket);
       if (response.status === 200) {
@@ -347,7 +349,7 @@ export default function TableSortAndSelection() {
         alert("Failed to update device.");
       }
       setTicket(ticket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
-      setFilterTicket(filteredTicket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
+      // setFilterTicket(filteredTicket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
       setUpdateDialogOpen(false);
     } catch (error) {
       console.error("Error updating device:", error);
@@ -516,22 +518,22 @@ export default function TableSortAndSelection() {
                   <td>{formatTime(row.returnDeadline)}</td>
                   <td>{row.status}</td>
                   <td>{formatItems(row.items)}</td>
-                  <td>{row.action}</td>
-                  <td><Button
-                    variant="contained"
-                    color="error"
-                    onClick={(e) => {
-                      setDialogOpen(true)
-                      openUpdateForm(row);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                    <UpdateDevicesMenu
+                  <td>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        setDialogOpen(true)
+                        openUpdateForm(row);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <UpdateTicketForm
                       open={updateDialogOpen}
                       onClose={() => setUpdateDialogOpen(false)}
                       onSubmit={handleUpdate}
-                      deviceData={selectedDevice} />
+                      ticketData={selectedTicket} />
                     <Button
                       variant="contained"
                       color="error"

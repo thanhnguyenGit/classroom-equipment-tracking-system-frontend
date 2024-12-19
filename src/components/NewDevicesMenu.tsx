@@ -1,24 +1,42 @@
+
 import React, { useRef, useState, useEffect } from "react";
-import Popup from 'reactjs-popup'
+import Popup from 'reactjs-popup';
 import ClickableText from "./ClickableText";
-import "../styles/NewDevicesMenu.scss"
+import "../styles/NewDevicesMenu.scss";
 import { TextField, Box, MenuItem, Snackbar } from "@mui/material";
-import { AddEquipment } from "../endpoint/equipment.tsx"
-import { NewDevice } from "../data/mockData.ts";
 import axios from "axios";
 
 function NewDevicesMenu() {
-  const [formData, setFormData] = useState<NewDevice>({
+  const [formData, setFormData] = useState({
     name: "",
     roomId: 0,
     quantity: 0,
   });
+  const [rooms, setRooms] = useState<{ id: number; name: string }[]>([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const ref = useRef<any>(null);
 
-  // handle input change and update state
+  // Fetch room data from the backend
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get("/api/equipment/list");
+        const mappedRooms = response.data.map((item: any) => ({
+          id: item.room?.roomName ?? "Unknown",
+          name: `${item.room?.building?.buildingName ?? "Unknown"} - ${item.room?.roomName ?? "Unknown"}`,
+        }));
+        setRooms(mappedRooms);
+      } catch (error) {
+        console.error("Error fetching room data:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+  // Handle input change and update state
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData({
@@ -27,7 +45,15 @@ function NewDevicesMenu() {
     });
   };
 
-  // handle adding new device
+  // Handle room selection
+  const handleRoomChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+    setFormData({
+      ...formData,
+      roomId: e.target.value as number,
+    });
+  };
+
+  // Handle adding new device
   const handleSave = async () => {
     if (!formData.name || !formData.roomId || formData.quantity <= 0) {
       setSnackbarMessage("Please fill in all fields correctly.");
@@ -42,8 +68,8 @@ function NewDevicesMenu() {
       console.log("Device created successfully:", response.data);
       setSnackbarMessage("Device created successfully!");
       setOpenSnackbar(true);
-      setFormData({ name: "", roomId: 0, quantity: 0 }); // reset form data
-      ref.current.close(); // close popup
+      setFormData({ name: "", roomId: 0, quantity: 0 }); // Reset form data
+      ref.current.close(); // Close popup
     } catch (error) {
       console.error("Error creating device:", error);
       setSnackbarMessage("Error creating device.");
@@ -54,7 +80,7 @@ function NewDevicesMenu() {
   };
 
   const exit = () => {
-    setFormData({ name: "", roomId: 0, quantity: 0 }); // reset form when exiting
+    setFormData({ name: "", roomId: 0, quantity: 0 }); // Reset form when exiting
     ref.current.close();
   };
 
@@ -66,20 +92,25 @@ function NewDevicesMenu() {
         modal
         nested
       >
-        <Box className="modal" component="form" sx={{ display: "flex", flexWrap: 'wrap' }} noValidate autoComplete="off">
+        <Box className="modal" component="form" sx={{ display: "flex", flexWrap: "wrap" }} noValidate autoComplete="off">
           <div className="header"> Add devices </div>
           <div className="content">
             <TextField
               fullWidth
-              className="Id"
-              required
-              id="roomId"
-              label="Room ID"
+              select
+              label="Room"
               value={formData.roomId}
-              onChange={handleInputChange}
+              onChange={handleRoomChange}
               variant="outlined"
               margin="dense"
-            />
+            >
+              {rooms.map((room) => (
+                <MenuItem key={room.id} value={room.id}>
+                  {room.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
             <TextField
               fullWidth
               className="Name"
@@ -107,7 +138,7 @@ function NewDevicesMenu() {
             <button
               className="savebutton"
               onClick={handleSave}
-              disabled={loading} // disable save button while loading
+              disabled={loading} // Disable save button while loading
             >
               {loading ? "Saving..." : "SAVE"}
             </button>
@@ -129,3 +160,4 @@ function NewDevicesMenu() {
 }
 
 export default NewDevicesMenu;
+
