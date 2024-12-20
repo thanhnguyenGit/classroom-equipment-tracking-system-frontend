@@ -1,11 +1,13 @@
 {
+  homepage: "https://thanhnguyengit.github.io/classroom-equipment-tracking-system-frontend"
   "name": "classroom-equipment-tracking-system-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "predeploy": "npm run build"
+    "dev": "vite ",
+    "build": "vite build",
     "test": "jtest",
     "lint": "eslint .",
     "preview": "vite preview"
