@@ -25,7 +25,7 @@ function NewDevicesMenu() {
         const response = await axios.get("/api/equipment/list");
 
         // Map rooms and remove duplicates based on room ID
-        const uniqueRooms = Array.from(
+        const uniqueRooms: any = Array.from(
           new Map(
             response.data.map((item: any) => [
               item.room?.id, // Use room ID as the unique key

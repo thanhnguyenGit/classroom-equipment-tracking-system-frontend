@@ -5,7 +5,7 @@ export interface Device {
 	buildingName: string,
 	status: 'AVAILABLE' | 'UNAVAILABLE' | 'BORROWED' | 'DAMAGED' | 'NORMAL' | 'LOST'
 	quantity: number,
-	action: null,
+	action: string,
 }
 
 export interface Ticket {
@@ -16,7 +16,7 @@ export interface Ticket {
 	returnDeadline: string,
 	status: 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'CANCELED',
 	items: Array<Items>,
-	action: null,
+	action: string,
 }
 export interface Items {
 	id: number,

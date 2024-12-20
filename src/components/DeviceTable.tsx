@@ -262,7 +262,7 @@ export default function TableSortAndSelection() {
   const [_deviceToEdit, _setDeviceToEdit] = useState<UpdateDevice | null>(null);
   const [filteredDevice, setFilterDevice] = useState<Device[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [selectedDevice, setSelectedDevice] = useState<UpdateDevice | null>(null);
   const [_dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [order, setOrder] = React.useState<Order>('asc');
@@ -294,7 +294,7 @@ export default function TableSortAndSelection() {
 
     fetchData();
     // Set up periodic refresh
-    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchData, 5000); // Refresh every 30 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -353,7 +353,7 @@ export default function TableSortAndSelection() {
     setUpdateDialogOpen(true);
   };
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
+    _event: React.MouseEvent<unknown>,
     property: keyof Device,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -446,12 +446,12 @@ export default function TableSortAndSelection() {
             .sort(getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
-              const isItemSelected = selected.includes(row.id);
+              const isItemSelected = selected.includes(row.name);
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
                 <tr
-                  onClick={(event) => handleClick(event, row.id)}
+                  onClick={(event) => handleClick(event, row.name)}
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}

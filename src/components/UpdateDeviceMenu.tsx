@@ -8,7 +8,7 @@ interface UpdateDeviceFormProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: UpdateDevice) => void;
-  deviceData: UpdateDevice;
+  deviceData: UpdateDevice | null;
 }
 
 const UpdateDeviceForm = ({

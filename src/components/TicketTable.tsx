@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/TicketsTable.scss";
-import { Ticket, Items } from '../data/mockData';
+import { Ticket, Items, UpdateTicket } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -52,13 +52,14 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  a: { [key in Key]: number | string | Array<any> },
+  b: { [key in Key]: number | string | Array<any> },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
+
 interface HeadCell {
   disablePadding: boolean;
   id: keyof Ticket;
@@ -264,7 +265,7 @@ export default function TableSortAndSelection() {
   const [ticket, setTicket] = useState<Ticket[]>([]);
   const [filteredTicket, setFilterTicket] = useState<Ticket[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState<UpdateTicket | null>(null);
   const [_dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const fetchData = async () => {
@@ -302,7 +303,7 @@ export default function TableSortAndSelection() {
 
     fetchData();
     // Set up periodic refresh
-    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchData, 5000); // Refresh every 30 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -487,12 +488,12 @@ export default function TableSortAndSelection() {
             .sort(getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
-              const isItemSelected = selected.includes(row.id);
+              const isItemSelected = selected.includes(row.borrowerName);
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
                 <tr
-                  onClick={(event) => handleClick(event, row.id)}
+                  onClick={(event) => handleClick(event, row.borrowerName)}
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}

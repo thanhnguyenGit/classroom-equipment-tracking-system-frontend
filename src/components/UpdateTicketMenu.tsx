@@ -2,14 +2,14 @@
 import { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button } from "@mui/material";
-import { UpdateTicket as TicketUpdateData } from "../data/mockData";
+import { UpdateTicket } from "../data/mockData";
 
 // Props for the form component
 interface UpdateTicketFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: TicketUpdateData) => void;
-  ticketData: TicketUpdateData;
+  onSubmit: (data: UpdateTicket) => void;
+  ticketData: UpdateTicket | null;
 }
 
 const UpdateTicketForm = ({
@@ -18,7 +18,7 @@ const UpdateTicketForm = ({
   onSubmit,
   ticketData,
 }: UpdateTicketFormProps) => {
-  const [formData, setFormData] = useState<TicketUpdateData>(
+  const [formData, setFormData] = useState<UpdateTicket>(
     ticketData || { orderId: 0, newDeadline: "" }
   );
 

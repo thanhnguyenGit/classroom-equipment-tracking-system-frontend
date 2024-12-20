@@ -39,7 +39,7 @@ const Sidebar = () => {
               <span>Ticket</span>
             </li>
           </Link>
-          {JSON.parse(localStorage.getItem("user")).admin ? (
+          {localStorage.getItem("user") && JSON.parse(localStorage.getItem("user")!).admin ? (
             <Link to="/staff" style={{ textDecoration: "none" }}>
               <li>
                 < GroupOutlinedIcon className="icon" />

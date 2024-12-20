@@ -2,7 +2,7 @@ import { useState } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
 
-const RegisterForm = ({ open, onClose, onSubmit }) => {
+const RegisterForm = ({ open, onClose, onSubmit }: any) => {
   const building = [
     { value: "D7", label: "D7" },
     { value: "D9", label: "D9" },
