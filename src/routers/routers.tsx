@@ -1,4 +1,4 @@
-import { createBrowserRouter, Route, Routes } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Devices from "../pages/Devices.tsx";
 import Dashboard from "../pages/Dashboard.tsx";
 import Tickets from "../pages/Tickets.tsx";
@@ -7,8 +7,6 @@ import { UserProvider } from "../context/useAuth.tsx";
 import App from "../App.tsx";
 import { ProtectedRouters } from "./ProtectedRouter.tsx";
 import { ChangePassword } from "../pages/ChangePassword.tsx";
-import { Register } from "../pages/Register.tsx";
-import User from "../pages/StaffList.tsx";
 import StaffList from "../pages/StaffList.tsx";
 import Profile from "../pages/Profile.tsx";
 

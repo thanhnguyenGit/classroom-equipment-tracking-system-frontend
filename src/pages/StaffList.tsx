@@ -109,6 +109,7 @@ const User = () => {
     <div className="dashboard">
       <Sidebar />
       <div className="homeContainer">
+        <Navbar />
         <div className="widgets"></div>
         <div className="listContainer">
           <Button variant="contained" onClick={() => setDialogOpen(true)}>
@@ -129,7 +130,7 @@ const User = () => {
             margin="normal"
           />
           <div className="listTitle"></div>
-          {JSON.parse(localStorage.getItem("user")).admin ? (
+          {localStorage.getItem("user") && JSON.parse(localStorage.getItem("user")!).admin ? (
             <TableContainer component={Paper} className="table">
               <Table sx={{ minWidth: 650 }} aria-label="staff table">
                 {/* Table Head */}
@@ -153,7 +154,7 @@ const User = () => {
                       <TableCell>{item.email}</TableCell>
                       <TableCell>{item.phone}</TableCell>
                       <TableCell>
-                        {item.buildingId?.buildingName || 'No building assigned'}
+                        {item.buildingName}
                       </TableCell>
                       <TableCell>
                         <Button

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/TicketsTable.scss";
-import { ticketsRow, ticketsCol, Ticket, Items, createTicket } from '../data/mockData';
+import { Ticket, Items, UpdateTicket } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -53,13 +52,14 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  a: { [key in Key]: number | string | Array<any> },
+  b: { [key in Key]: number | string | Array<any> },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
+
 interface HeadCell {
   disablePadding: boolean;
   id: keyof Ticket;
@@ -265,8 +265,8 @@ export default function TableSortAndSelection() {
   const [ticket, setTicket] = useState<Ticket[]>([]);
   const [filteredTicket, setFilterTicket] = useState<Ticket[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<UpdateTicket | null>(null);
+  const [_dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const fetchData = async () => {
     try {
@@ -303,7 +303,7 @@ export default function TableSortAndSelection() {
 
     fetchData();
     // Set up periodic refresh
-    const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchData, 5000); // Refresh every 30 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -339,24 +339,36 @@ export default function TableSortAndSelection() {
     setFilterTicket(filtered);
   };
 
-  const handleUpdate = async (updatedTicket) => {
+  const handleUpdate = async (updatedTicket: any) => {
     try {
-      const response = await axios.post("/api/order/extend-deadline", updatedTicket);
+      // Construct the payload to include the orderId (ticket id) and new deadline
+      const payload = {
+        orderId: updatedTicket.id, // Include the orderId
+        newDeadline: updatedTicket.newDeadline, // Ensure this is coming from the update form
+      };
+
+      // Send the payload to the API
+      const response = await axios.post("/api/order/extend-deadline", payload);
+
       if (response.status === 200) {
         alert("Device updated successfully.");
-        fetchData();  // Refetch the devices list after update
+        fetchData(); // Refetch the tickets list after update
       } else {
-        alert("Failed to update device.");
+        alert("Failed to update the device.");
       }
-      setTicket(ticket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
-      // setFilterTicket(filteredTicket.map((item) => (item.id === updatedTicket.id ? response.data : item)));
+
+      // Update the ticket in the state
+      setTicket(
+        ticket.map((item) =>
+          item.id === updatedTicket.id ? response.data : item
+        )
+      );
       setUpdateDialogOpen(false);
     } catch (error) {
       console.error("Error updating device:", error);
     }
-  };
-  // Open update form
-  const openUpdateForm = (ticket) => {
+  };  // Open update form
+  const openUpdateForm = (ticket: any) => {
     setSelectedTicket(ticket);
     setUpdateDialogOpen(true);
   };
@@ -380,25 +392,25 @@ export default function TableSortAndSelection() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
+    _event: React.MouseEvent<unknown>,
     property: keyof Ticket,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const handleActionClick = (id: number) => {
+  const handleActionClick = (_id: number) => {
     console.log("clicked")
   }
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected: any = rows.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
     if (selectedIndex === -1) {
@@ -418,7 +430,7 @@ export default function TableSortAndSelection() {
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (_event: any, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -476,12 +488,12 @@ export default function TableSortAndSelection() {
             .sort(getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
-              const isItemSelected = selected.includes(row.id);
+              const isItemSelected = selected.includes(row.borrowerName);
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
                 <tr
-                  onClick={(event) => handleClick(event, row.id)}
+                  onClick={(event) => handleClick(event, row.borrowerName)}
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}
@@ -522,7 +534,7 @@ export default function TableSortAndSelection() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={(e) => {
+                      onClick={(_e) => {
                         setDialogOpen(true)
                         openUpdateForm(row);
                       }}

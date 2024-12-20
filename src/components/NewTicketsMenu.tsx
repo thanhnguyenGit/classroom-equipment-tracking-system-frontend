@@ -1,13 +1,11 @@
 
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import ClickableText from "./ClickableText";
 import "../styles/NewDevicesMenu.scss";
 import {
   TextField,
   Box,
-  MenuItem,
-  Snackbar,
   Autocomplete,
   List,
   ListItem,
@@ -17,7 +15,7 @@ import { Remove, Add } from "@mui/icons-material";
 import axios from "axios";
 import { NewTicketItems, NewTicket } from "../data/mockData";
 function NewTicketsMenu() {
-  const [rows, setRows] = useState<NewTicketItems[]>([]);
+  const [loading, setLoading] = useState(false);
   const [equipmentOptions, setEquipmentOptions] = useState<number[]>([]); // State for equipment IDs
   const [formData, setFormData] = useState<NewTicket>({
     borrowerId: 0,
@@ -95,6 +93,8 @@ function NewTicketsMenu() {
   const exit = () => ref.current.close();
 
   const handleSave = async () => {
+
+    setLoading(true);
     try {
       const formattedData = {
         ...formData,
@@ -213,8 +213,8 @@ function NewTicketsMenu() {
           </IconButton>
         </div>
         <div className="actions">
-          <button className="savebutton" type="button" onClick={handleSave}>
-            Save
+          <button className="savebutton" type="button" onClick={handleSave} disabled={loading}>
+            {loading ? "Saving..." : "SAVE"}
           </button>
           <button className="exitbutton" type="button" onClick={exit}>
             Exit

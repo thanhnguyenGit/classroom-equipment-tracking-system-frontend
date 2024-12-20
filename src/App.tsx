@@ -1,4 +1,4 @@
-import { BrowserRouter, Outlet, Router } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import "./App.scss";
 function App() {
   return (

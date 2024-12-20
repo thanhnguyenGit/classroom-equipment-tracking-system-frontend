@@ -8,10 +8,10 @@ import {
   Button,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/useAuth";
+
 
 export const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -40,12 +40,12 @@ export const ChangePassword = () => {
     }
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     const { oldPassword, newPassword, confirmNewPassword, staffId } = formData;
 
@@ -95,6 +95,7 @@ export const ChangePassword = () => {
             value={formData.oldPassword}
             onChange={handleChange}
             placeholder="Enter old password"
+            type="password"
             fullWidth
             required
             autoFocus

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Avatar,
@@ -10,16 +10,15 @@ import {
   Button,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import axios from "axios";
 import { LoginParams, useAuth } from "../context/useAuth";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to store error messages
+  const [error, _] = useState(""); // State to store error messages
   const navigate = useNavigate();
   const { login } = useAuth();
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault(); // Prevent form from reloading the page
     login({
       username,
