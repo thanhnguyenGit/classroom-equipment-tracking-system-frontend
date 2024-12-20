@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Popup from "reactjs-popup";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
 
@@ -27,7 +27,7 @@ const RegisterForm = ({ open, onClose, onSubmit }) => {
   });
 
   // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { id, name, value } = e.target;
     setFormData((prev) => ({ ...prev, [id || name]: value }));
   };

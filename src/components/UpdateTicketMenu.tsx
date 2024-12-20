@@ -34,7 +34,7 @@ const UpdateTicketForm = ({
   };
 
   const handleSave = async () => {
-    const { orderId, newDeadline } = formData;
+    const newDeadline = formData;
     if (!newDeadline) {
       alert("Please fill in the new deadline.");
       return;

@@ -25,7 +25,7 @@ export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+    // const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
       setToken("token");

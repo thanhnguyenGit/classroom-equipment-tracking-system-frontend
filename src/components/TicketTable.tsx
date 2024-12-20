@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/TicketsTable.scss";
-import { ticketsRow, ticketsCol, Ticket, Items, createTicket } from '../data/mockData';
+import { Ticket, Items } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -266,7 +265,7 @@ export default function TableSortAndSelection() {
   const [filteredTicket, setFilterTicket] = useState<Ticket[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [_dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const fetchData = async () => {
     try {
@@ -339,7 +338,7 @@ export default function TableSortAndSelection() {
     setFilterTicket(filtered);
   };
 
-  const handleUpdate = async (updatedTicket) => {
+  const handleUpdate = async (updatedTicket: any) => {
     try {
       // Construct the payload to include the orderId (ticket id) and new deadline
       const payload = {
@@ -368,7 +367,7 @@ export default function TableSortAndSelection() {
       console.error("Error updating device:", error);
     }
   };  // Open update form
-  const openUpdateForm = (ticket) => {
+  const openUpdateForm = (ticket: any) => {
     setSelectedTicket(ticket);
     setUpdateDialogOpen(true);
   };
@@ -392,25 +391,25 @@ export default function TableSortAndSelection() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
+    _event: React.MouseEvent<unknown>,
     property: keyof Ticket,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const handleActionClick = (id: number) => {
+  const handleActionClick = (_id: number) => {
     console.log("clicked")
   }
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected: any = rows.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
     if (selectedIndex === -1) {
@@ -430,7 +429,7 @@ export default function TableSortAndSelection() {
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (_event: any, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -534,7 +533,7 @@ export default function TableSortAndSelection() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={(e) => {
+                      onClick={(_e) => {
                         setDialogOpen(true)
                         openUpdateForm(row);
                       }}

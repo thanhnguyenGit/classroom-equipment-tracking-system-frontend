@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/Widget.scss";
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
@@ -36,8 +36,8 @@ const Widget = ({ type }: { type: string }) => {
     return () => clearInterval(intervalId);
   }, []);
   //temporary data
-  const nums = totalRows;
-  const diff = 30;
+  // const nums = totalRows;
+  // const diff = 30;
 
   switch (type) {
     case "tickets":

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import "../styles/DevicesTable.scss";
-import { devicesRow, devicesCol, Device, createDevice, UpdateDevice } from '../data/mockData';
+import { Device, UpdateDevice } from '../data/mockData';
 import Box from '@mui/joy/Box';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
@@ -260,11 +259,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 export var total_rows = 0;
 export default function TableSortAndSelection() {
   const [device, setDevices] = useState<Device[]>([]);
-  const [deviceToEdit, setDeviceToEdit] = useState<UpdateDevice | null>(null);
+  const [_deviceToEdit, _setDeviceToEdit] = useState<UpdateDevice | null>(null);
   const [filteredDevice, setFilterDevice] = useState<Device[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDevice, setSelectedDevice] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [_dialogOpen, setDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Device>('id');
@@ -332,11 +331,7 @@ export default function TableSortAndSelection() {
     setFilterDevice(filtered);
   };
 
-  const handleClose = () => {
-    fetchData();
-    setDialogOpen(false);
-  };
-  const handleUpdate = async (updatedDevice) => {
+  const handleUpdate = async (updatedDevice: any) => {
     try {
       const response = await axios.post("/api/equipment/update", updatedDevice);
       if (response.status === 200) {
@@ -353,7 +348,7 @@ export default function TableSortAndSelection() {
     }
   };
   // Open update form
-  const openUpdateForm = (device) => {
+  const openUpdateForm = (device: any) => {
     setSelectedDevice(device);
     setUpdateDialogOpen(true);
   };
@@ -367,13 +362,13 @@ export default function TableSortAndSelection() {
   };
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected: any = rows.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
     if (selectedIndex === -1) {
@@ -393,7 +388,7 @@ export default function TableSortAndSelection() {
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (_event: any, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -496,7 +491,7 @@ export default function TableSortAndSelection() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={(e) => {
+                      onClick={(_e) => {
                         setDialogOpen(true)
                         openUpdateForm(row);
                       }}

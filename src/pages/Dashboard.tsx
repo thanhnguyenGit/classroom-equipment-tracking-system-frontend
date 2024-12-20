@@ -1,5 +1,4 @@
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
 import Widget from "../components/Widget";
 import Table from "../components/Table";
 import "../styles/Dashboard.scss";
